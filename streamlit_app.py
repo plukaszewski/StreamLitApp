@@ -1,18 +1,41 @@
 import streamlit as st
-import cv2
-import numpy as np
-from PIL import Image
-import requests
+import time
+import openai
 
-st.write("Streamlit is also great for more traditional ML use cases like computer vision or NLP. Here's an example of edge detection using OpenCV. 👁️") 
+client = openai.OpenAI(st.secrets["API_KEY"], st.secrets["BASE_URL"])
 
-uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
-if uploaded_file:
-    image = Image.open(uploaded_file)
-else:
-    image = Image.open(requests.get("https://picsum.photos/200/120", stream=True).raw)
+st.write("Streamlit loves LLMs! 🤖 [Build your own chat app](https://docs.streamlit.io/develop/tutorials/llms/build-conversational-apps) in minutes, then make it powerful by adding images, dataframes, or even input widgets to the chat.")
 
-edges = cv2.Canny(np.array(image), 100, 200)
-tab1, tab2 = st.tabs(["Detected edges", "Original"])
-tab1.image(edges, use_column_width=True)
-tab2.image(image, use_column_width=True)
+st.caption("Note that this demo app isn't actually connected to any LLMs. Those are expensive ;)")
+
+# Initialize chat history
+if "messages" not in st.session_state:
+    st.session_state.messages = [{"role": "assistant", "content": "Let's start chatting! 👇"}]
+
+# Display chat messages from history on app rerun
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+# Accept user input
+if prompt := st.chat_input("What is up?"):
+    # Add user message to chat history
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    # Display user message in chat message container
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    # Display assistant response in chat message container
+    with st.chat_message("assistant"):
+        message_placeholder = st.empty()
+        full_response = ""
+        assistant_response = client.chat.completions(model = st.secrets["MODEL"], message = st.session_state.messages)
+        # Simulate stream of response with milliseconds delay
+        for chunk in assistant_response.split():
+            full_response += chunk + " "
+            time.sleep(0.05)
+            # Add a blinking cursor to simulate typing
+            message_placeholder.markdown(full_response + "▌")
+        message_placeholder.markdown(full_response)
+    # Add assistant response to chat history
+    st.session_state.messages.append({"role": "assistant", "content": full_response})
