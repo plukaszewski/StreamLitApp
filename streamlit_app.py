@@ -2,7 +2,7 @@ import streamlit as st
 import time
 import openai
 
-client = openai.OpenAI(st.secrets["API_KEY"], st.secrets["BASE_URL"])
+client = openai.OpenAI(api_key = st.secrets["API_KEY"], base_url = st.secrets["BASE_URL"])
 
 st.write("Streamlit loves LLMs! 🤖 [Build your own chat app](https://docs.streamlit.io/develop/tutorials/llms/build-conversational-apps) in minutes, then make it powerful by adding images, dataframes, or even input widgets to the chat.")
 
