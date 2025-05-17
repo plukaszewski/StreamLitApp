@@ -1,2 +1,4 @@
 openai
 PyMuPDF
+langchain_openai
+pydantic

@@ -4,26 +4,25 @@ import openai
 from io import StringIO
 import os
 import fitz
+from typing import Optional
+from langchain_openai import ChatOpenAI
+from pydantic import Field, SecretStr
 
 client = openai.OpenAI(api_key = st.secrets["API_KEY"], base_url = st.secrets["BASE_URL"])
 if "files" not in st.session_state:
     st.session_state.files = []
 
-def load_pdf(data):
-    doc = fitz.Document(stream = data)
-    text = ""
-    for page in doc:
-        text += page.get_text()
-    doc.close()
-    return text
+class ChatOpenRouter(ChatOpenAI):
+    openai_api_key: Optional[SecretStr] = Field(
+        alias="api_key", default_factory=st.secrets["API_KEY"]
+    )
+    @property
+    def lc_secrets(self) -> dict[str, str]:
+        return {"openai_api_key": st.secrets["API_KEY"]}
 
-def load_documents_from_folder(folder_path):
-    documents = []
-    for filename in os.listdir(folder_path):
-        if filename.endswith(".pdf"):
-            text = load_pdf(os.path.join(folder_path, filename))
-            documents.append({"filename": filename, "text": text})
-    return documents
+    def __init__(self, openai_api_key: Optional[str] = None, **kwargs):
+        openai_api_key = openai_api_key or st.secrets["API_KEY"]
+        super().__init__(base_url=st.secrets["BASE_URL"], openai_api_key=openai_api_key, **kwargs)
 
 with st.sidebar:
     uploaded_file = st.file_uploader("Choose a file")
