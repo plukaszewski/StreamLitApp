@@ -34,7 +34,7 @@ with st.sidebar:
         # To read file as bytes:
         bytes_data = file.getvalue()
         if file.type == "application/pdf":
-            string_data = load_pdf(file.name)
+            string_data = load_pdf(bytes_data)
         else:
             stringio = StringIO(file.getvalue().decode("utf-8"))
             string_data = stringio.read()
