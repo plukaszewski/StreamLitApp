@@ -75,14 +75,19 @@ def retrieve_docs(query, faiss_index, k=3):
     results = faiss_index.similarity_search(query_embedding, k=k)
     return results
 
-template = ""
+template = """
+Answer questions with given template.
+Question: {question}
+Context: {context}
+Answer:
+"""
 
 selected_model = "minstralai/minstral-7b-instruct:free"
 model = ChatOpenRouter(model_name = selected_model)
 
 def answer_question(question, documents, model):
     context = "\n\n".join([doc["text"] for doc in documents])
-    prompt = ChatPromptTemplate.from_template(template)
+    prompt = ChatOpenAI.ChatPromptTemplate.from_template(template)
     chain = prompt | model
     return chain.invoke({"question": question, "context": context})
 
@@ -115,9 +120,7 @@ with st.sidebar:
         st.session_state.files = []
         uploaded_file = None
 
-st.write("Streamlit loves LLMs! 🤖 [Build your own chat app](https://docs.streamlit.io/develop/tutorials/llms/build-conversational-apps) in minutes, then make it powerful by adding images, dataframes, or even input widgets to the chat.")
-
-st.caption("Note that this demo app isn't actually connected to any LLMs. Those are expensive ;)")
+st.caption("RAG")
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -140,7 +143,8 @@ if prompt := st.chat_input("What is up?"):
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
         full_response = ""
-        assistant_response = model.chat.completions.create(model = st.secrets["MODEL"], messages = st.session_state.messages)
+        assistant_response = answer_question(prompt, [], model)
+        #assistant_response = model.chat.completions.create(model = st.secrets["MODEL"], messages = st.session_state.messages)
         # Simulate stream of response with milliseconds delay
         for chunk in assistant_response.choices[0].message.content.split():
             full_response += chunk + " "
