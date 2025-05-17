@@ -14,7 +14,7 @@ with st.sidebar:
     if uploaded_file is not None:
         files.append(uploaded_file)
 
-    for file in files
+    for file in files:
         # To read file as bytes:
         bytes_data = file.getvalue()
         st.write(file.type)
