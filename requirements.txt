@@ -2,5 +2,5 @@ openai
 PyMuPDF
 langchain_openai
 pydantic
-faiss
+faiss-cpu
 langchain_huggingface
