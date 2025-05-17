@@ -7,10 +7,25 @@ import fitz
 from typing import Optional
 from langchain_openai import ChatOpenAI
 from pydantic import Field, SecretStr
+import faiss
+import numpy as np
+from langchain_huggingface import HuggingFaceEmbeddings
 
-client = openai.OpenAI(api_key = st.secrets["API_KEY"], base_url = st.secrets["BASE_URL"])
-if "files" not in st.session_state:
-    st.session_state.files = []
+def load_pdf(data):
+    doc = fitz.Document(stream = data)
+    text = ""
+    for page in doc:
+        text += page.get_text()
+    doc.close()
+    return text
+
+def load_documents_from_folder(folder_path):
+    documents = []
+    for filename in os.listdir(folder_path):
+        if filename.endswith(".pdf"):
+            text = load_pdf(os.path.join(folder_path, filename))
+            documents.append({"filename": filename, "text": text})
+    return documents
 
 class ChatOpenRouter(ChatOpenAI):
     openai_api_key: Optional[SecretStr] = Field(
@@ -23,6 +38,49 @@ class ChatOpenRouter(ChatOpenAI):
     def __init__(self, openai_api_key: Optional[str] = None, **kwargs):
         openai_api_key = openai_api_key or st.secrets["API_KEY"]
         super().__init__(base_url=st.secrets["BASE_URL"], openai_api_key=openai_api_key, **kwargs)
+
+class FAISSIndex:
+    def __init__(self, faiss_index, metadata):
+        self.index = faiss_index
+        self.metadata = metadata
+
+    def similarity_search(self, query, k=3):
+        D, I = self.index.search(query, k)  # D: distances, I: indices
+        results = []
+        for idx in I[0]:
+            results.append(self.metadata[idx])
+        return results
+
+embed_model_id = 'intfloat/e5-small-v2'
+model_kwargs = {"device": "cpu", "trust_remote_code": True}
+
+def create_index(documents):
+    embeddings = HuggingFaceEmbeddings(model_name=embed_model_id, model_kwargs=model_kwargs)
+    texts = [doc["text"] for doc in documents]
+    metadata = [{"filename": doc["filename"], "text": doc["text"]} for doc in documents]
+
+    # Generate embeddings
+    embeddings_matrix = [embeddings.embed_query(text) for text in texts]
+    embeddings_matrix = np.array(embeddings_matrix).astype("float32")
+
+    # Create FAISS index
+    index = faiss.IndexFlatL2(embeddings_matrix.shape[1])
+    index.add(embeddings_matrix)
+
+    # Return a FAISSIndex object that contains both the index and metadata
+    return FAISSIndex(index, metadata)
+
+def retrieve_docs(query, faiss_index, k=3):
+    embeddings = HuggingFaceEmbeddings(model_name=embed_model_id, model_kwargs=model_kwargs)
+    query_embedding = np.array([embeddings.embed_query(query)]).astype("float32")
+    results = faiss_index.similarity_search(query_embedding, k=k)
+    return results
+
+
+client = openai.OpenAI(api_key = st.secrets["API_KEY"], base_url = st.secrets["BASE_URL"])
+if "files" not in st.session_state:
+    st.session_state.files = []
+
 
 with st.sidebar:
     uploaded_file = st.file_uploader("Choose a file")
