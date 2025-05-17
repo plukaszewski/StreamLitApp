@@ -1,6 +1,5 @@
 import streamlit as st
 import time
-import openai
 from io import StringIO
 import os
 import fitz
