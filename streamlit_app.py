@@ -6,18 +6,22 @@ import os
 import fitz
 
 client = openai.OpenAI(api_key = st.secrets["API_KEY"], base_url = st.secrets["BASE_URL"])
+files = []
+
 
 with st.sidebar:
     uploaded_file = st.file_uploader("Choose a file")
     if uploaded_file is not None:
-        # To read file as bytes:
-        bytes_data = uploaded_file.getvalue()
-        st.write(uploaded_file.type)
-        if uploaded_file.type == "pdf":
-            string_data = load_pdf(uploaded_file.name)
+        files.append(uploaded_file)
 
+    for file in files
+        # To read file as bytes:
+        bytes_data = file.getvalue()
+        st.write(file.type)
+        if file.type == "application/pdf":
+            string_data = load_pdf(file.name)
         else:
-            stringio = StringIO(uploaded_file.getvalue().decode("utf-8"))
+            stringio = StringIO(file.getvalue().decode("utf-8"))
             string_data = stringio.read()
 
         st.write(string_data)
