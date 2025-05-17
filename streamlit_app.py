@@ -1,8 +1,19 @@
 import streamlit as st
 import time
 import openai
+from io import StringIO
 
 client = openai.OpenAI(api_key = st.secrets["API_KEY"], base_url = st.secrets["BASE_URL"])
+
+with st.sidebar:
+    uploaded_file = st.file_uploader("Choose a file")
+    if uploaded_file is not None:
+        # To read file as bytes:
+        bytes_data = uploaded_file.getvalue()
+        st.write(bytes_data)
+
+        string_data = stringio.read()
+        st.write(string_data)
 
 st.write("Streamlit loves LLMs! 🤖 [Build your own chat app](https://docs.streamlit.io/develop/tutorials/llms/build-conversational-apps) in minutes, then make it powerful by adding images, dataframes, or even input widgets to the chat.")
 
