@@ -96,8 +96,6 @@ client = openai.OpenAI(api_key = st.secrets["API_KEY"], base_url = st.secrets["B
 if "files" not in st.session_state:
     st.session_state.files = []
 
-if
-
 with st.sidebar:
     uploaded_file = st.file_uploader("Choose a file")
     if uploaded_file is not None:
