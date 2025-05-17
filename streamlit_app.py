@@ -12,6 +12,7 @@ with st.sidebar:
     if uploaded_file is not None:
         # To read file as bytes:
         bytes_data = uploaded_file.getvalue()
+        st.write(uploaded_file.type)
         if uploaded_file.type == "pdf":
             string_data = load_pdf(uploaded_file.name)
 
