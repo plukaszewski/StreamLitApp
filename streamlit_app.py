@@ -7,7 +7,7 @@ import fitz
 from typing import Optional
 from langchain_openai import ChatOpenAI
 from pydantic import Field, SecretStr
-import faiss-cpu
+import faiss
 import numpy as np
 from langchain_huggingface import HuggingFaceEmbeddings
 
@@ -76,6 +76,22 @@ def retrieve_docs(query, faiss_index, k=3):
     results = faiss_index.similarity_search(query_embedding, k=k)
     return results
 
+template = ""
+
+selected_model = "minstralai/minstral-7b-instruct:free"
+model = ChatOpenRouter(model_name = selected_model)
+
+def answer_question(question, documents, model):
+    context = "\n\n".join([doc["text"] for doc in documents])
+    prompt = ChatPromptTemplate.from_template(template)
+    chain = prompt | model
+    retun chain.invoke({"question": question, "context": context})
+
+if "query" not in st.session_state:
+    st.session_state.query = ""
+
+if "answer" not in st.session_state:
+    st.session_state.answer = ""
 
 client = openai.OpenAI(api_key = st.secrets["API_KEY"], base_url = st.secrets["BASE_URL"])
 if "files" not in st.session_state:
