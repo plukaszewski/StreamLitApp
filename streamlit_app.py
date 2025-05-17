@@ -27,7 +27,7 @@ def load_documents_from_folder(folder_path):
 with st.sidebar:
     uploaded_file = st.file_uploader("Choose a file")
     if uploaded_file is not None:
-        files.append(uploaded_file)
+        st.session_state.files.append(uploaded_file)
 
     for file in files:
         # To read file as bytes:
