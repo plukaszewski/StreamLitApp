@@ -33,7 +33,6 @@ with st.sidebar:
     for file in st.session_state.files:
         # To read file as bytes:
         bytes_data = file.getvalue()
-        st.write(file.type)
         if file.type == "application/pdf":
             string_data = load_pdf(file.name)
         else:
@@ -41,6 +40,9 @@ with st.sidebar:
             string_data = stringio.read()
 
         st.write(string_data)
+
+    if st.button("Clear"):
+        st.session_state.files = []
 
 st.write("Streamlit loves LLMs! 🤖 [Build your own chat app](https://docs.streamlit.io/develop/tutorials/llms/build-conversational-apps) in minutes, then make it powerful by adding images, dataframes, or even input widgets to the chat.")
 
