@@ -9,8 +9,8 @@ client = openai.OpenAI(api_key = st.secrets["API_KEY"], base_url = st.secrets["B
 if "files" not in st.session_state:
     st.session_state.files = []
 
-def load_pdf(file_path):
-    doc = fitz.open(file_path)
+def load_pdf(data):
+    doc = fitz.Document(stream = data)
     text = ""
     for page in doc:
         text += page.get_text()
@@ -43,6 +43,7 @@ with st.sidebar:
 
     if st.button("Clear"):
         st.session_state.files = []
+        uploaded_file = None
 
 st.write("Streamlit loves LLMs! 🤖 [Build your own chat app](https://docs.streamlit.io/develop/tutorials/llms/build-conversational-apps) in minutes, then make it powerful by adding images, dataframes, or even input widgets to the chat.")
 
