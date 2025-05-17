@@ -6,7 +6,8 @@ import os
 import fitz
 
 client = openai.OpenAI(api_key = st.secrets["API_KEY"], base_url = st.secrets["BASE_URL"])
-files = []
+if "files" not in st.session_state:
+    st.session_state.files = []
 
 def load_pdf(file_path):
     doc = fitz.open(file_path)
