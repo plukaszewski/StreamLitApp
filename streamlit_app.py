@@ -92,7 +92,6 @@ if "query" not in st.session_state:
 if "answer" not in st.session_state:
     st.session_state.answer = ""
 
-client = openai.OpenAI(api_key = st.secrets["API_KEY"], base_url = st.secrets["BASE_URL"])
 if "files" not in st.session_state:
     st.session_state.files = []
 
@@ -141,7 +140,7 @@ if prompt := st.chat_input("What is up?"):
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
         full_response = ""
-        assistant_response = client.chat.completions.create(model = st.secrets["MODEL"], messages = st.session_state.messages)
+        assistant_response = model.chat.completions.create(model = st.secrets["MODEL"], messages = st.session_state.messages)
         # Simulate stream of response with milliseconds delay
         for chunk in assistant_response.choices[0].message.content.split():
             full_response += chunk + " "
