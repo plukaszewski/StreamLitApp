@@ -85,7 +85,7 @@ def answer_question(question, documents, model):
     context = "\n\n".join([doc["text"] for doc in documents])
     prompt = ChatPromptTemplate.from_template(template)
     chain = prompt | model
-    retun chain.invoke({"question": question, "context": context})
+    return chain.invoke({"question": question, "context": context})
 
 if "query" not in st.session_state:
     st.session_state.query = ""
