@@ -7,7 +7,7 @@ import fitz
 from typing import Optional
 from langchain_openai import ChatOpenAI
 from pydantic import Field, SecretStr
-import faiss
+import faiss-cpu
 import numpy as np
 from langchain_huggingface import HuggingFaceEmbeddings
 
