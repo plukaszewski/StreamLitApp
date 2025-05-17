@@ -2,6 +2,8 @@ import streamlit as st
 import time
 import openai
 from io import StringIO
+import os
+import fitz
 
 client = openai.OpenAI(api_key = st.secrets["API_KEY"], base_url = st.secrets["BASE_URL"])
 
@@ -10,9 +12,13 @@ with st.sidebar:
     if uploaded_file is not None:
         # To read file as bytes:
         bytes_data = uploaded_file.getvalue()
+        if uploaded_file.type == "pdf":
+            string_data = load_pdf(uploaded_file.name)
 
-        stringio = StringIO(uploaded_file.getvalue().decode("utf-8"))
-        string_data = stringio.read()
+        else:
+            stringio = StringIO(uploaded_file.getvalue().decode("utf-8"))
+            string_data = stringio.read()
+
         st.write(string_data)
 
 st.write("Streamlit loves LLMs! 🤖 [Build your own chat app](https://docs.streamlit.io/develop/tutorials/llms/build-conversational-apps) in minutes, then make it powerful by adding images, dataframes, or even input widgets to the chat.")
@@ -50,3 +56,19 @@ if prompt := st.chat_input("What is up?"):
         message_placeholder.markdown(full_response)
     # Add assistant response to chat history
     st.session_state.messages.append({"role": "assistant", "content": full_response})
+
+def load_pdf(file_path):
+    doc = fitz.open(file_path)
+    text = ""
+    for page in doc:
+        text += page.get_text()
+    doc.close()
+    return text
+
+def load_documents_from_folder(folder_path):
+    documents = []
+    for filename in os.listdir(folder_path):
+        if filename.endswith(".pdf"):
+            text = load_pdf(os.path.join(folder_path, filename))
+            documents.append({"filename": filename, "text": text})
+    return documents
