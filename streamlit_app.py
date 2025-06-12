@@ -9,6 +9,7 @@ from pydantic import Field, SecretStr
 import faiss
 import numpy as np
 from langchain_huggingface import HuggingFaceEmbeddings
+import mcp
 
 def load_pdf(data):
     doc = fitz.Document(stream = data)
