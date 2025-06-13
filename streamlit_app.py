@@ -7,6 +7,8 @@ from pydantic import BaseModel, Field, SecretStr
 ##########IMG##########
 from PIL import Image
 
+a = 0
+
 def clear():
 	st.session_state.file = None
 	st.rerun()
@@ -24,10 +26,7 @@ def flip_vertically() -> str:
 ##########TEST#########
 
 def test() -> str:
-	if "test" not in st.session_state:
-		st.session_state.test = 0
-
-	st.session_state.test += 1
+	a += 1
 	return "TEST SUCCESSFULL"
 
 #######################
@@ -74,11 +73,7 @@ def init_model():
 	st.session_state.agent = agent
 
 
-
-
-async def main():
-
-	if "file" not in st.session_state:
+if "file" not in st.session_state:
 		st.session_state.file = None
 
 	if "agent" not in st.session_state:
@@ -147,8 +142,4 @@ async def main():
 			st.image(st.session_state.file.name)
 
 		if "test"  in st.session_state:
-			st.text(st.session_state.test)
-		
-
-if __name__ == "__main__":
-	asyncio.run(main())
+			st.text(a)
