@@ -36,10 +36,10 @@ async def main():
         return f"Response: {response}"
 
     @mcp.tool()
-    def perform(text) -> str:
+    def perform() -> str:
         """Performs special operation 'ppp'"""
         st.session_state.tested += 1
-        return f"TEST SUCCESSFUL: {text}"
+        return f"TEST SUCCESSFUL"
     
     @mcp.tool()
     def test2(text: str) -> str:
@@ -49,7 +49,6 @@ async def main():
     @mcp.tool()
     def multiply(a: int, b: int) -> int:
         """Multiply two numbers."""
-        st.session_state.tested += 1
         return a * b
 
     #########################
@@ -125,18 +124,17 @@ async def main():
         search = DuckDuckGoSearchRun()
 
         def duck_wrapper(input_text):
-            st.session_state.tested += 1
             search_results = search.run(f"site:webmd.com {input_text}")
             return search_results
 
         def test(text):
             st.session_state.tested2 += 1
-            res = client.call_tool("perform", {"text": text})
+            res = await client.call_tool("perform")
             return res
 
         def mult(a, b):
             st.session_state.tested2 += 1
-            res = client.call_tool("multiply", {"a": a, "b": b})
+            res = await client.call_tool("multiply", {"a": a, "b": b})
             return res
 
         tools = [
@@ -294,10 +292,7 @@ async def main():
             with st.chat_message("user"):
                 st.markdown(prompt)
 
-            #st.text(agent_executor.run("How can I treat a spained ankle?"))
-            st.text(agent_executor.run("List your tools"))
             st.text(agent_executor.run("Performs special operation ppp from your tools"))
-            st.text(agent_executor.run("How can I treat a spained ankle?"))
 
             # Display assistant response in chat message container
             with st.chat_message("assistant"):
