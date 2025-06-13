@@ -108,8 +108,8 @@ async def main():
             response = st.session_state.agent.invoke(
                 {
                     "messages": [
-                        SystemMessage(content="whats the weather in sf?"),
-                        HumanMessage(content="Flip image vertically"),
+                        SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image."),
+                        HumanMessage(content="whats the weather in sf?"),
 
                     ]
                 })
