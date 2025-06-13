@@ -30,7 +30,8 @@ def flip_vertically() -> str:
 ##########TEST#########
 
 def test() -> str:
-	global a += 1
+	global a
+	a += 1
 	return "TEST SUCCESSFULL"
 
 #######################
