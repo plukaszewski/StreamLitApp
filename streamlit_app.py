@@ -248,7 +248,7 @@ async def main():
             for tool in await client.list_tools():
                 st.text(tool.name)
 
-            st.text(await client.call_tool("test", {"text": "test message"}))
+            st.text(await client.call_tool("test"))
             st.text(st.session_state.tested)
 
         st.caption("MCP")
