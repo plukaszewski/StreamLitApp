@@ -167,7 +167,7 @@ async def main():
             # The list of tools available
             tools: List[BaseTool]
 
-            def format(self, **kwargs) -> str:
+            def format_prompt(self, **kwargs) -> str:
                 # Get the intermediate steps (AgentAction, Observation tuples)
                 # Format them in a particular way
                 intermediate_steps = kwargs.pop("intermediate_steps")
