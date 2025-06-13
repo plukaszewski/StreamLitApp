@@ -172,21 +172,6 @@ async def main():
         input_variables=["input", "intermediate_steps"]
     )
 
-    llm_chain = LLMChain(llm=model, prompt=prompt)
-
-    tool_names = [tool.name for tool in tools]
-
-    agent = LLMSingleActionAgent(
-        llm_chain=llm_chain,
-        output_parser=output_parser,
-        stop=["\nObservation:"],
-        allowed_tools=tool_names
-    )
-
-    agent_executor = AgentExecutor.from_agent_and_tools(agent=agent,
-                                                    tools=tools,
-                                                    verbose=True)
-    
     class CustomOutputParser(AgentOutputParser):
         def parse(self, llm_output: str) -> Union[AgentAction, AgentFinish]:
             # Check if agent should finish
@@ -208,6 +193,23 @@ async def main():
             return AgentAction(tool=action, tool_input=action_input.strip(" ").strip('"'), log=llm_output)
 
     output_parser = CustomOutputParser()
+
+    llm_chain = LLMChain(llm=model, prompt=prompt)
+
+    tool_names = [tool.name for tool in tools]
+
+    agent = LLMSingleActionAgent(
+        llm_chain=llm_chain,
+        output_parser=output_parser,
+        stop=["\nObservation:"],
+        allowed_tools=tool_names
+    )
+
+    agent_executor = AgentExecutor.from_agent_and_tools(agent=agent,
+                                                    tools=tools,
+                                                    verbose=True)
+    
+    
 
     async with Client(mcp) as client:
 
