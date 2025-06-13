@@ -4,6 +4,7 @@ from io import StringIO
 import os
 from typing import Optional
 from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
 from pydantic import Field, SecretStr
 import faiss
 import numpy as np
@@ -45,7 +46,7 @@ async def main():
             openai_api_key = openai_api_key or st.secrets["API_KEY"]
             super().__init__(base_url=st.secrets["BASE_URL"], openai_api_key=openai_api_key, **kwargs)
 
-    template = ChatOpenAI.ChatPromptTemplate([
+    template = ChatPromptTemplate([
         ("human", "{question}")
     ])
     
