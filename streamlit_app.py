@@ -126,7 +126,7 @@ async def main():
             for tool in await client.list_tools():
                 st.text(tool.name)
 
-            st.text(agent_response.["messages"][-1]["content"])
+            st.text(agent_response["messages"][-1]["content"])
 
             st.text(await client.call_tool("test", {"text": "test message"}))
 
