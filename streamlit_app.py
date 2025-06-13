@@ -2,6 +2,7 @@ import streamlit as st
 import os
 import asyncio
 from typing import Optional, Any, List, Union
+from pydantic import Field, SecretStr
 
 ##########IMG##########
 from PIL import Image
