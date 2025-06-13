@@ -54,7 +54,7 @@ class ChatOpenRouter(ChatOpenAI):
 
 def init_model():
     selected_model = "mistralai/devstral-small:free"
-    model = ChatOpenRouter(model_name = selected_model
+    model = ChatOpenRouter(model_name = selected_model)
 
     tools = [
         StructuredTool.from_function(
