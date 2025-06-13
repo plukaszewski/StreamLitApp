@@ -2,7 +2,7 @@ import streamlit as st
 import os
 import asyncio
 from typing import Optional, Any, List, Union
-from pydantic import Field, SecretStr
+from pydantic import BaseModek, Field, SecretStr
 
 ##########IMG##########
 from PIL import Image
@@ -35,6 +35,7 @@ from langchain_openai import ChatOpenAI
 from langchain.agents import Tool
 
 from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_core.tools import StructuredTool
 
 from langgraph.prebuilt import create_react_agent
 from langgraph.prebuilt import create_react_agent
@@ -55,10 +56,12 @@ def init_model():
     selected_model = "mistralai/devstral-small:free"
     model = ChatOpenRouter(model_name = selected_model)
 
-    tools = [Tool(
+    tools = [StructuredTool.from_function(
         name = "test",
         func=test,
         description="Tool useful to test if service is working"
+        return_direct=True
+        args_schema=BaseModel()
     )]
 
     agent = create_react_agent(model, tools)
