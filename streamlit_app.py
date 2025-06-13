@@ -11,7 +11,7 @@ def clear():
     st.session_state.file = None
     st.rerun()
 
-def flip_vertically():
+def flip_vertically(): -> str
     if st.session_state.file is not None:
         img = Image.open(st.session_state.file.name)
         img = img.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
@@ -23,7 +23,7 @@ def flip_vertically():
 
 ##########TEST#########
 
-def test():
+def test(): -> str
     if "test" not in st.session_state:
         st.session_state.test = 0
 
@@ -108,7 +108,7 @@ async def main():
             for step in st.session_state.agent.stream(
                 {
                     "messages": [
-                        SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image."),
+                        SystemMessage(content="You are an image handling service. Test if service is working."),
                         HumanMessage(content="Flip image vertically"),
 
                     ]
