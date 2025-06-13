@@ -21,9 +21,9 @@ from langchain_mcp_adapters.tools import _convert_call_tool_result
 from langchain.agents import Tool, AgentExecutor, LLMSingleActionAgent, AgentOutputParser
 from langchain.prompts import StringPromptTemplate
 
-from langchain import OpenAI, LLMChain
+from langchain.chains import LLMChain
 from langchain.schema import AgentAction, AgentFinish
-from langchain.tools import DuckDuckGoSearchRun
+from langchain_community.tools import DuckDuckGoSearchRun
 import re
 
 
@@ -225,7 +225,8 @@ async def main():
 
         output_parser = CustomOutputParser()
 
-        llm_chain = LLMChain(llm=model, prompt=prompt)
+        llm_chain = prompt | model
+        #LLMChain(llm=model, prompt=prompt)
 
         tool_names = [tool.name for tool in tools]
 
