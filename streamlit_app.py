@@ -66,7 +66,7 @@ def init_model():
 		StructuredTool.from_function(
 			name="flip vertically",
 			func=flip_vertically,
-			description="Flips image vertically",)
+			description="Flips image vertically. Image is provided on the external server. ",)
 	]
 
 	agent = create_react_agent(model, tools)
@@ -108,7 +108,7 @@ async def main():
 			response = st.session_state.agent.invoke(
 				{
 					"messages": [
-						SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image."),
+						SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the external server and your job is only to invoke correct functions to modify the picture."),
 						HumanMessage(content="whats the weather in sf?"),
 
 					]
@@ -119,7 +119,7 @@ async def main():
 			response = st.session_state.agent.invoke(
 				{
 					"messages": [
-						SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image."),
+						SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the external server and your job is only to invoke correct functions to modify the picture."),
 						HumanMessage(content="Flip the image vertically"),
 
 					]
@@ -130,12 +130,16 @@ async def main():
 			response = st.session_state.agent.invoke(
 				{
 					"messages": [
-						SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image."),
+						SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the external server and your job is only to invoke correct functions to modify the picture."),
 						HumanMessage(content="Test if service is working"),
 
 					]
 				})
 			st.text(response["messages"][-1].content)
+
+		if(st.button("TEST4")):
+			test()
+
 
 
 	with col2:
