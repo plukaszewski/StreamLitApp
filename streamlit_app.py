@@ -272,6 +272,7 @@ async def main():
 
             #st.text(await client.call_tool("test"))
             st.text(st.session_state.tested)
+            st.text(st.session_state.tested2)
 
         st.caption("MCP")
 
