@@ -54,15 +54,22 @@ class ChatOpenRouter(ChatOpenAI):
 
 def init_model():
     selected_model = "mistralai/devstral-small:free"
-    model = ChatOpenRouter(model_name = selected_model)
+    model = ChatOpenRouter(model_name = selected_model
 
-    tools = [StructuredTool.from_function(
-        name = "test",
-        func=test,
-        description="Tool useful to test if service is working"
-        return_direct=True
-        args_schema=BaseModel()
-    )]
+    tools = [
+        StructuredTool.from_function(
+            name = "test",
+            func=test,
+            description="Tool useful to test if service is working"
+            return_direct=True
+            args_schema=BaseModel()),
+        StructuredTool.from_function(
+            name = "flip vertically",
+            func=flip_vertically,
+            description="Flips image vertically"
+            return_direct=False
+            args_schema=BaseModel()).
+    ]
 
     agent = create_react_agent(model, tools)
 
@@ -104,7 +111,7 @@ async def main():
                 {
                     "messages": [
                         SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image."),
-                        HumanMessage(content="Is service working?"),
+                        HumanMessage(content="Flip image vertically"),
 
                     ]
                 })
