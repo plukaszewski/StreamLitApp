@@ -64,12 +64,14 @@ from mcp.types import (
     ImageContent,
 )
 NonTextContent = ImageContent | EmbeddedResource
+from langchain_mcp_adapters.tools import _convert_call_tool_result
 
 def init_mcp_sever():
 	mcp = FastMCP("Image Handler")
 
 	@mcp.tool()
 	def flip_vertically() -> str:
+	"""Flips image horizontally. Image is provided on the external server. """
 		img = Image.open("image.jpg")
 		img = img.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
 		img.save("image.jpg")
@@ -77,6 +79,7 @@ def init_mcp_sever():
 
 	@mcp.tool()
 	def flip_horizontally() -> str:
+	"""Flips image vertically. Image is provided on the external server. """
 		img = Image.open("image.jpg")
 		img = img.transpose(Image.Transpose.FLIP_TOP_BOTTOM)
 		img.save("image.jpg")
@@ -84,6 +87,7 @@ def init_mcp_sever():
 
 	@mcp.tool()
 	def rotate_90() -> str:
+	"""Rotates image by 90 degrees. Image is provided on the external server. """
 		img = Image.open("image.jpg")
 		img = img.transpose(Image.Transpose.ROTATE_90)
 		img.save("image.jpg")
@@ -91,6 +95,7 @@ def init_mcp_sever():
 
 	@mcp.tool()
 	def roll(delta: int):
+	"""Rolls image by amout of pixels provided. Image is provided on the external server. """
 		img = Image.open("image.jpg")
 		xsize, ysize = img.size
 		delta = delta % xsize

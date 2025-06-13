@@ -3,6 +3,7 @@ Pillow
 langchain
 langchain-openai
 langchain-core
+langchain-mcp-adapters
 langgraph
 pydantic
 fastmcp
