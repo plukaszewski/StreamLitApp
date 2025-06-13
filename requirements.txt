@@ -6,5 +6,5 @@ faiss-cpu
 langchain_huggingface
 fastmcp
 asyncio
-langchain-mcp-adapters
+langchain_mcp_adapters
 langgraph
