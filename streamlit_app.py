@@ -98,9 +98,6 @@ async def main():
     if "files" not in st.session_state:
         st.session_state.files = []
 
-    if "counter" not in st.session_state:
-        st.session_state.counter = 0
-
     async with Client(mcp) as client:
 
         with st.sidebar:
@@ -149,12 +146,8 @@ async def main():
             # Create and run the agent
             tools = [convert(client, t) for t in await client.list_tools()]
             agent = create_react_agent(model, tools)
-            #agent_response = await agent.ainvoke({"messages": "Test the availability of Image Handler"})
-            #st.text(agent_response)
-
-            st.text("TEST")
-            st.session_state.counter += 1
-            st.text(st.session_state.counter)
+            agent_response = await agent.ainvoke({"messages": "Test the availability of Image Handler"})
+            st.text(agent_response)
 
             # Display assistant response in chat message container
             with st.chat_message("assistant"):
