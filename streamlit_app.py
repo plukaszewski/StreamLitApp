@@ -212,7 +212,7 @@ async def main():
 				**arguments: dict[str, Any],
 				) -> tuple[str | list[str], list[NonTextContent] | None]:
 				call_tool_result = await c.call_tool(mcptool.name, arguments)
-				return _convert_call_tool_result(call_tool_result)
+				return _convert_call_tool_result(call_tool_result[-1])
 
 			return StructuredTool(
 			name=mcptool.name,
