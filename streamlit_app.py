@@ -140,10 +140,6 @@ class ChatOpenRouter(ChatOpenAI):
 		def __init__(self, openai_api_key: Optional[str] = None, **kwargs):
 			openai_api_key = openai_api_key or st.secrets["API_KEY"]
 			super().__init__(base_url=st.secrets["BASE_URL"], openai_api_key=openai_api_key, **kwargs)
-	
-
-
-
 
 async def init_model():
 	async with Client(init_mcp_sever()) as client:
@@ -247,29 +243,6 @@ async def main():
 			metadata=mcptool.annotations.model_dump() if mcptool.annotations else None,
 			)
 
-		tools = [
-			StructuredTool.from_function(
-				name="test",
-				func=test,
-				description="Tool useful to test if service is working",),
-			StructuredTool.from_function(
-				name="flip horizontally",
-				func=flip_horizontally,
-				description="Flips image horizontally. Image is provided on the external server. ",),
-			StructuredTool.from_function(
-				name="flip vertically",
-				func=flip_vertically,
-				description="Flips image vertically. Image is provided on the external server. ",),
-			StructuredTool.from_function(
-				name="rotate 90",
-				func=rotate_90,
-				description="Rotates image by 90 degrees. Image is provided on the external server. ",),
-			StructuredTool.from_function(
-				name="roll",
-				func=roll,
-				description="Rolls image by amout of pixels provided. Image is provided on the external server. ",),
-		]
-
 		tools = [convert_tool(client, t) for t in mcp_tools]
 
 		st.session_state.tools = tools
@@ -290,7 +263,7 @@ async def main():
 
 		with st.sidebar:
 			for tool in st.session_state.tools:
-				st.text(tool.name)
+				st.text(f"{tool.name}: {tool.description}")
 	
 		with col1:
 			if st.session_state.file is None:
@@ -303,31 +276,8 @@ async def main():
 						f.write(b)
 					st.rerun()
 
-			if(st.button("Flip Vertically")):
-				flip_vertically()
-
 			if(st.button("Clear")):
 				clear()
-
-			if(st.button("V")):
-				response = await agent.ainvoke(
-					{
-						"messages": [
-							SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the externally and your job is only to invoke correct functions to modify the picture. With every answer try to use one of your tools! Call tools asynchronously!"),
-							HumanMessage(content="Flip the image vertically"),
-
-						]
-					})
-				for t in response["messages"]:
-					st.text(t.content)
-				
-			if(st.button("T")):
-				for tool in st.session_state.mcp_tools:
-					st.text(tool)
-
-			if(st.button("C")):
-				d = dict()
-				await st.session_state.tools[0].arun(d)
 
 			if prompt := st.chat_input("What shall I do?"):
 				response = await agent.ainvoke(
