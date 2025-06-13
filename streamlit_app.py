@@ -310,7 +310,7 @@ async def main():
 				clear()
 
 			if(st.button("V")):
-				response = agent.ainvoke(
+				response = await agent.ainvoke(
 					{
 						"messages": [
 							SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the externally and your job is only to invoke correct functions to modify the picture. With every answer try to use one of your tools! Call tools asynchronously!"),
@@ -330,7 +330,7 @@ async def main():
 				await st.session_state.tools[0].arun(d)
 
 			if prompt := st.chat_input("What shall I do?"):
-				response = agent.ainvoke(
+				response = await agent.ainvoke(
 					{
 						"messages": [
 							SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the externally and your job is only to invoke correct functions to modify the picture. With every answer try to use one of your tools! Call tools asynchronously!"),
