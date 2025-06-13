@@ -3,6 +3,13 @@ import os
 import asyncio
 from PIL import Image
 
+def flip_vertically():
+    if st.session_state.file is not None:
+        img = Image.open(st.session_state.file.name)
+        img = img.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+        img.save(st.session_state.file.name)
+
+
 async def main():
 
     if "file" not in st.session_state:
@@ -19,12 +26,9 @@ async def main():
             b = uploaded_file.getvalue()
             with open(uploaded_file.name, "wb") as f:
                 f.write(b)
-        
-            img = Image.open(uploaded_file.name)
 
             if(st.button("Flip Horizontally")):
-                img = img.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
-                img.save(uploaded_file.name)
+                flip_vertically()
 
     with col2:
         if st.session_state.file is not None:
