@@ -17,4 +17,4 @@ def test2(text: str) -> str:
     return f"TEST2 SUCCESSFUL: {text}"
 
 if __name__ == "__main__":
-    mcp.run()
+    asyncio.run(mcp.run())

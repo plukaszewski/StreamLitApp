@@ -156,8 +156,8 @@ async def main():
         config = {
             "mcpServers": {
                 "playwright": {
-                    "command": "fastmcp",
-                    "args": ["run mcp_server.py"]
+                    "command": "python",
+                    "args": ["mcp_server.py"]
                 }
             }
         }
