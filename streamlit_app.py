@@ -17,6 +17,35 @@ def flip_vertically() -> str:
 	img.save("image.jpg")
 	return "SUCCESS"
 
+def flip_horizontally() -> str:
+	img = Image.open("image.jpg")
+	img = img.transpose(Image.Transpose.FLIP_TOP_BOTTOM)
+	img.save("image.jpg")
+	return "SUCCESS"
+
+def rotate_90() -> str:
+	img = Image.open("image.jpg")
+	img = img.transpose(Image.Transpose.ROTATE_90)
+	img.save("image.jpg")
+	return "SUCCESS"
+
+def roll(delta: int):
+	img = Image.open("image.jpg")
+	xsize, ysize = img.size
+
+    delta = delta % xsize
+    if delta == 0:
+		img.save("image.jpg")
+        return "SUCCESS"
+
+    part1 = img.crop((0, 0, delta, ysize))
+    part2 = img.crop((delta, 0, xsize, ysize))
+    img.paste(part1, (xsize - delta, 0, xsize, ysize))
+    img.paste(part2, (0, 0, xsize - delta, ysize))
+
+	img.save("image.jpg")
+	return "SUCCESS"
+
 #######################
 
 ##########TEST#########
@@ -58,10 +87,24 @@ def init_model():
 			func=test,
 			description="Tool useful to test if service is working",),
 		StructuredTool.from_function(
+			name="flip horizontally",
+			func=flip_horizontally,
+			description="Flips image horizontally. Image is provided on the external server. ",),
+		StructuredTool.from_function(
 			name="flip vertically",
 			func=flip_vertically,
-			description="Flips image vertically. Image is provided on the external server. ",)
+			description="Flips image vertically. Image is provided on the external server. ",),
+		StructuredTool.from_function(
+			name="rotate 90",
+			func=rotate_90,
+			description="Rotates image by 90 degrees. Image is provided on the external server. ",),
+		StructuredTool.from_function(
+			name="roll",
+			func=roll,
+			description="Rolls image by amout of pixels provided. Image is provided on the external server. ",),
 	]
+
+	st.session_state.tools = tools
 
 	agent = create_react_agent(model, tools)
 
@@ -77,6 +120,10 @@ if "agent" not in st.session_state:
 st.header("Image Tools")
 
 col1, col2 = st.columns(2)
+
+with st.sidebar:
+	for tool in st.session_state.tools:
+		st.text(tool.name)
 	
 with col1:
 	if st.session_state.file is None:
@@ -130,6 +177,16 @@ with col1:
 
 	if(st.button("TEST4")):
 		test()
+
+	if prompt := st.chat_input("What shall I do?"):
+		response = st.session_state.agent.invoke(
+			{
+				"messages": [
+					SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the externally and your job is only to invoke correct functions to modify the picture. With every answer try to use one of your tools!"),
+					HumanMessage(content=prompt),
+				]
+			})
+		st.text(response["messages"][-1].content)
 
 
 
