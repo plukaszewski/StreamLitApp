@@ -115,7 +115,7 @@ async def main():
             with st.chat_message("assistant"):
                 message_placeholder = st.empty()
                 full_response = ""
-                assistant_response = answer_question(prompt, [], model)
+                assistant_response = answer_question(prompt, model)
                 #assistant_response = model.chat.completions.create(model = st.secrets["MODEL"], messages = st.session_state.messages)
                 # Simulate stream of response with milliseconds delay
                 for chunk in assistant_response.choices[0].message.content.split():
