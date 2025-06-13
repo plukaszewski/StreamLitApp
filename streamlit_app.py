@@ -8,27 +8,27 @@ from pydantic import BaseModel, Field, SecretStr
 from PIL import Image
 
 def clear():
-    st.session_state.file = None
-    st.rerun()
+	st.session_state.file = None
+	st.rerun()
 
 def flip_vertically() -> str:
-    if st.session_state.file is not None:
-        img = Image.open(st.session_state.file.name)
-        img = img.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
-        img.save(st.session_state.file.name)
-        return "SUCCESS"
-    return "FAIL"
+	if st.session_state.file is not None:
+		img = Image.open(st.session_state.file.name)
+		img = img.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+		img.save(st.session_state.file.name)
+		return "SUCCESS"
+	return "FAIL"
 
 #######################
 
 ##########TEST#########
 
 def test() -> str:
-    if "test" not in st.session_state:
-        st.session_state.test = 0
+	if "test" not in st.session_state:
+		st.session_state.test = 0
 
-    st.session_state.test += 1
-    return "TEST SUCCESSFULL"
+	st.session_state.test += 1
+	return "TEST SUCCESSFULL"
 
 #######################
 
@@ -43,86 +43,108 @@ from langgraph.prebuilt import create_react_agent
 from langgraph.prebuilt import create_react_agent
 
 class ChatOpenRouter(ChatOpenAI):
-        openai_api_key: Optional[SecretStr] = Field(
-            alias="api_key", default_factory=st.secrets["API_KEY"]
-        )
-        @property
-        def lc_secrets(self) -> dict[str, str]:
-            return {"openai_api_key": st.secrets["API_KEY"]}
+		openai_api_key: Optional[SecretStr] = Field(
+			alias="api_key", default_factory=st.secrets["API_KEY"]
+		)
+		@property
+		def lc_secrets(self) -> dict[str, str]:
+			return {"openai_api_key": st.secrets["API_KEY"]}
 
-        def __init__(self, openai_api_key: Optional[str] = None, **kwargs):
-            openai_api_key = openai_api_key or st.secrets["API_KEY"]
-            super().__init__(base_url=st.secrets["BASE_URL"], openai_api_key=openai_api_key, **kwargs)
+		def __init__(self, openai_api_key: Optional[str] = None, **kwargs):
+			openai_api_key = openai_api_key or st.secrets["API_KEY"]
+			super().__init__(base_url=st.secrets["BASE_URL"], openai_api_key=openai_api_key, **kwargs)
 
 def init_model():
-    selected_model = "deepseek/deepseek-chat-v3-0324:free"
-    model = ChatOpenRouter(model_name = selected_model)
+	selected_model = "deepseek/deepseek-chat-v3-0324:free"
+	model = ChatOpenRouter(model_name = selected_model)
 
-    tools = [
-        StructuredTool.from_function(
-            name="test",
-            func=test,
-            description="Tool useful to test if service is working",),
-        StructuredTool.from_function(
-            name="flip vertically",
-            func=flip_vertically,
-            description="Flips image vertically",)
-    ]
+	tools = [
+		StructuredTool.from_function(
+			name="test",
+			func=test,
+			description="Tool useful to test if service is working",),
+		StructuredTool.from_function(
+			name="flip vertically",
+			func=flip_vertically,
+			description="Flips image vertically",)
+	]
 
-    agent = create_react_agent(model, tools)
+	agent = create_react_agent(model, tools)
 
-    st.session_state.agent = agent
+	st.session_state.agent = agent
 
 
 
 
 async def main():
 
-    if "file" not in st.session_state:
-        st.session_state.file = None
+	if "file" not in st.session_state:
+		st.session_state.file = None
 
-    if "agent" not in st.session_state:
-        init_model()
+	if "agent" not in st.session_state:
+		init_model()
 
-    st.header("Image Tools")
+	st.header("Image Tools")
 
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        if st.session_state.file is None:
-            uploaded_file = st.file_uploader("Choose a file", type=["jpg", "jpeg", "png"])
-            if uploaded_file is not None:
-                st.session_state.file = uploaded_file
-                b = uploaded_file.getvalue()
-                with open(uploaded_file.name, "wb") as f:
-                    f.write(b)
-                st.rerun()
+	col1, col2 = st.columns(2)
+	
+	with col1:
+		if st.session_state.file is None:
+			uploaded_file = st.file_uploader("Choose a file", type=["jpg", "jpeg", "png"])
+			if uploaded_file is not None:
+				st.session_state.file = uploaded_file
+				b = uploaded_file.getvalue()
+				with open(uploaded_file.name, "wb") as f:
+					f.write(b)
+				st.rerun()
 
-        if(st.button("Flip Vertically")):
-            flip_vertically()
+		if(st.button("Flip Vertically")):
+			flip_vertically()
 
-        if(st.button("Clear")):
-            clear()
+		if(st.button("Clear")):
+			clear()
 
-        if(st.button("TEST")):
-            response = st.session_state.agent.invoke(
-                {
-                    "messages": [
-                        SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image."),
-                        HumanMessage(content="whats the weather in sf?"),
+		if(st.button("TEST")):
+			response = st.session_state.agent.invoke(
+				{
+					"messages": [
+						SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image."),
+						HumanMessage(content="whats the weather in sf?"),
 
-                    ]
-                })
-            st.text(response["messages"][-1].content)
+					]
+				})
+			st.text(response["messages"][-1].content)
+
+		if(st.button("TEST2")):
+			response = st.session_state.agent.invoke(
+				{
+					"messages": [
+						SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image."),
+						HumanMessage(content="Flip the image vertically"),
+
+					]
+				})
+			st.text(response["messages"][-1].content)
+
+		if(st.button("TEST3")):
+			response = st.session_state.agent.invoke(
+				{
+					"messages": [
+						SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image."),
+						HumanMessage(content="Test if service is working"),
+
+					]
+				})
+			st.text(response["messages"][-1].content)
 
 
-    with col2:
-        if st.session_state.file is not None:
-            st.image(st.session_state.file.name)
+	with col2:
+		if st.session_state.file is not None:
+			st.image(st.session_state.file.name)
 
-        if "test"  in st.session_state:
-            st.text(st.session_state.test)
-        
+		if "test"  in st.session_state:
+			st.text(st.session_state.test)
+		
 
 if __name__ == "__main__":
-    asyncio.run(main())
+	asyncio.run(main())
