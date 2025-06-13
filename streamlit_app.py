@@ -36,8 +36,8 @@ async def main():
         return f"Response: {response}"
 
     @mcp.tool()
-    def test() -> str:
-        """Returns the configuration of the Image Hander service"""
+    def perform() -> str:
+        """Performs special operation 'ppp'"""
         st.session_state.tested += 1
         return f"TEST SUCCESSFUL"
     
@@ -126,7 +126,7 @@ async def main():
             return search_results
 
         def test():
-            res = client.call_tool("test")
+            res = client.call_tool("perform")
             return res
 
         def mult(a, b):
@@ -140,9 +140,9 @@ async def main():
                 description="useful for when you need to answer medical and pharmalogical questions"
             ),
             Tool(
-                name = "Test Image Handler",
+                name = "ppp",
                 func=test,
-                description="returns configuration of Image Handler",
+                description="Performs special operation 'ppp'",
                 return_direct=True
             ),
             Tool(
@@ -287,7 +287,7 @@ async def main():
                 st.markdown(prompt)
 
             #st.text(agent_executor.run("How can I treat a spained ankle?"))
-            st.text(agent_executor.run("multiply numbers 5 and 3"))
+            st.text(agent_executor.run("Performs special operation ppp"))
 
             # Display assistant response in chat message container
             with st.chat_message("assistant"):
