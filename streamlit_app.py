@@ -4,58 +4,6 @@ import asyncio
 from typing import Optional, Any, List, Union
 from pydantic import BaseModel, Field, SecretStr
 
-##########IMG##########
-from PIL import Image
-
-def clear():
-	st.session_state.file = None
-	st.rerun()
-
-def flip_vertically() -> str:
-	img = Image.open("image.jpg")
-	img = img.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
-	img.save("image.jpg")
-	return "SUCCESS"
-
-def flip_horizontally() -> str:
-	img = Image.open("image.jpg")
-	img = img.transpose(Image.Transpose.FLIP_TOP_BOTTOM)
-	img.save("image.jpg")
-	return "SUCCESS"
-
-def rotate_90() -> str:
-	img = Image.open("image.jpg")
-	img = img.transpose(Image.Transpose.ROTATE_90)
-	img.save("image.jpg")
-	return "SUCCESS"
-
-def roll(delta: int):
-	img = Image.open("image.jpg")
-	xsize, ysize = img.size
-	delta = delta % xsize
-
-	if delta == 0:
-		img.save("image.jpg")
-		return "SUCCESS"
-
-	part1 = img.crop((0, 0, delta, ysize))
-	part2 = img.crop((delta, 0, xsize, ysize))
-	img.paste(part1, (xsize - delta, 0, xsize, ysize))
-	img.paste(part2, (0, 0, xsize - delta, ysize))
-
-	img.save("image.jpg")
-	return "SUCCESS"
-
-#######################
-
-
-##########TEST#########
-
-def test() -> str:
-	return "TEST SUCCESSFULL"
-
-#######################
-
 
 ##########MCP##########
 from fastmcp import Client, FastMCP
@@ -67,6 +15,10 @@ from mcp.types import (
 )
 NonTextContent = ImageContent | EmbeddedResource
 #from langchain_mcp_adapters.tools import _convert_call_tool_result
+
+from PIL import Image
+import PIL.ImageFilter
+import PIL.ImageEnhance
 
 def init_mcp_sever():
 	mcp = FastMCP("Image Handler")
@@ -111,6 +63,15 @@ def init_mcp_sever():
 		img.paste(part1, (xsize - delta, 0, xsize, ysize))
 		img.paste(part2, (0, 0, xsize - delta, ysize))
 
+		img.save("image.jpg")
+		return "SUCCESS"
+
+	@mcp.tool()
+	def monochrome():
+		"""Converts image to monochrome scale. Image is provided on the external server. """
+		img = Image.open("image.jpg")
+		e = PIL.ImageEnhance.Color(img)
+		e.enhance(0.0);
 		img.save("image.jpg")
 		return "SUCCESS"
 
