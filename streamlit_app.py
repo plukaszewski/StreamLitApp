@@ -71,16 +71,16 @@ async def main():
         async def call_tool(
             **arguments: dict[str, Any],
         ) -> tuple[str | list[str], list[NonTextContent] | None]:
-            call_tool_result = await client.call_tool(tool.name, arguments)
+            call_tool_result = await client.call_tool(mcptool.name, arguments)
             return _convert_call_tool_result(call_tool_result)
 
         return StructuredTool(
-        name=tool.name,
-        description=tool.description or "",
-        args_schema=tool.inputSchema,
+        name=mcptool.name,
+        description=mcptool.description or "",
+        args_schema=mcptool.inputSchema,
         coroutine=call_tool,
         response_format="content_and_artifact",
-        metadata=tool.annotations.model_dump() if tool.annotations else None,
+        metadata=mcptool.annotations.model_dump() if mcptool.annotations else None,
     )
 
 
