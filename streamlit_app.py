@@ -109,7 +109,7 @@ async def main():
                 {
                     "messages": [
                         SystemMessage(content="You are an image handling service. Test if service is working."),
-                        HumanMessage(content="Flip image vertically"),
+                        HumanMessage(content="whats the weather in sf?"),
 
                     ]
                 },
