@@ -248,6 +248,9 @@ async def main():
 			for tool in st.session_state.mcp_tools:
 				st.text(tool)
 
+		if(st.button("C")):
+			st.session_state.tool.run()
+
 		if prompt := st.chat_input("What shall I do?"):
 			response = st.session_state.agent.invoke(
 				{
