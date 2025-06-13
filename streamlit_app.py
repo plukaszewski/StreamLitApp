@@ -318,7 +318,7 @@ async def main():
 
 						]
 					})
-				for t in response["messages"]
+				for t in response["messages"]:
 					st.text(t.content)
 				
 			if(st.button("T")):
