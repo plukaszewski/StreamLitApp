@@ -125,6 +125,7 @@ async def main():
         search = DuckDuckGoSearchRun()
 
         def duck_wrapper(input_text):
+            st.session_state.tested1 += 1
             search_results = search.run(f"site:webmd.com {input_text}")
             return search_results
 
@@ -296,6 +297,7 @@ async def main():
             #st.text(agent_executor.run("How can I treat a spained ankle?"))
             st.text(agent_executor.run("List your tools"))
             st.text(agent_executor.run("Performs special operation ppp from your tools"))
+            st.text(agent_executor.run("How can I treat a spained ankle?"))
 
             # Display assistant response in chat message container
             with st.chat_message("assistant"):
