@@ -2,30 +2,16 @@ import streamlit as st
 import time
 from io import StringIO
 import os
-import fitz
 from typing import Optional
 from langchain_openai import ChatOpenAI
 from pydantic import Field, SecretStr
 import faiss
 import numpy as np
-from langchain_huggingface import HuggingFaceEmbeddings
-import mcp
+from mcp import ClientSession, StdioServerParameters
+from mcp.client.stdio import stdio_client
 
-def load_pdf(data):
-    doc = fitz.Document(stream = data)
-    text = ""
-    for page in doc:
-        text += page.get_text()
-    doc.close()
-    return text
 
-def load_documents_from_folder(folder_path):
-    documents = []
-    for filename in os.listdir(folder_path):
-        if filename.endswith(".pdf"):
-            text = load_pdf(os.path.join(folder_path, filename))
-            documents.append({"filename": filename, "text": text})
-    return documents
+###########LLM###########
 
 class ChatOpenRouter(ChatOpenAI):
     openai_api_key: Optional[SecretStr] = Field(
@@ -39,43 +25,6 @@ class ChatOpenRouter(ChatOpenAI):
         openai_api_key = openai_api_key or st.secrets["API_KEY"]
         super().__init__(base_url=st.secrets["BASE_URL"], openai_api_key=openai_api_key, **kwargs)
 
-class FAISSIndex:
-    def __init__(self, faiss_index, metadata):
-        self.index = faiss_index
-        self.metadata = metadata
-
-    def similarity_search(self, query, k=3):
-        D, I = self.index.search(query, k)  # D: distances, I: indices
-        results = []
-        for idx in I[0]:
-            results.append(self.metadata[idx])
-        return results
-
-embed_model_id = 'intfloat/e5-small-v2'
-model_kwargs = {"device": "cpu", "trust_remote_code": True}
-
-def create_index(documents):
-    embeddings = HuggingFaceEmbeddings(model_name=embed_model_id, model_kwargs=model_kwargs)
-    texts = [doc["text"] for doc in documents]
-    metadata = [{"filename": doc["filename"], "text": doc["text"]} for doc in documents]
-
-    # Generate embeddings
-    embeddings_matrix = [embeddings.embed_query(text) for text in texts]
-    embeddings_matrix = np.array(embeddings_matrix).astype("float32")
-
-    # Create FAISS index
-    index = faiss.IndexFlatL2(embeddings_matrix.shape[1])
-    index.add(embeddings_matrix)
-
-    # Return a FAISSIndex object that contains both the index and metadata
-    return FAISSIndex(index, metadata)
-
-def retrieve_docs(query, faiss_index, k=3):
-    embeddings = HuggingFaceEmbeddings(model_name=embed_model_id, model_kwargs=model_kwargs)
-    query_embedding = np.array([embeddings.embed_query(query)]).astype("float32")
-    results = faiss_index.similarity_search(query_embedding, k=k)
-    return results
-
 template = """
 Answer questions with given template.
 Question: {question}
@@ -84,7 +33,6 @@ Answer:
 """
 
 selected_model = "minstralai/minstral-7b-instruct:free"
-model = ChatOpenRouter(model_name = selected_model)
 
 def answer_question(question, documents, model):
     context = "\n\n".join([doc["text"] for doc in documents])
@@ -101,6 +49,129 @@ if "answer" not in st.session_state:
 if "files" not in st.session_state:
     st.session_state.files = []
 
+class MCPClient:
+    def __init__(self):
+        # Initialize session and client objects
+        self.session: Optional[ClientSession] = None
+        self.model = ChatOpenRouter(model_name = selected_model)
+
+    def connect_to_server(self, server_script_path: str):
+        server_params = StdioServerParameters(
+            command="python", args=[server_script_path], env=None
+        )
+
+        stdio_transport = self.exit_stack.enter_async_context(
+            stdio_client(server_params)
+        )
+        self.stdio, self.write = stdio_transport
+        self.session = self.exit_stack.enter_async_context(
+            ClientSession(self.stdio, self.write)
+        )
+
+        self.session.initialize()
+
+        # List available tools
+        response = self.session.list_tools()
+        tools = response.tools
+        print("\nConnected to server with tools:", [tool.name for tool in tools])
+
+    def process_query(self, query: str) -> str:
+        """Process a query using Claude and available tools"""
+        messages = [
+            {
+                "role": "user",
+                "content": query
+            }
+        ]
+
+        response = self.session.list_tools()
+        available_tools = [{
+            "name": tool.name,
+            "description": tool.description,
+            "input_schema": tool.inputSchema
+        } for tool in response.tools]
+
+        # Initial Claude API call
+        response = self.anthropic.messages.create(
+            model="claude-3-5-sonnet-20241022",
+            max_tokens=1000,
+            messages=messages,
+            tools=available_tools
+        )
+
+        # Process response and handle tool calls
+        final_text = []
+
+        assistant_message_content = []
+        for content in response.content:
+            if content.type == 'text':
+                final_text.append(content.text)
+                assistant_message_content.append(content)
+            elif content.type == 'tool_use':
+                tool_name = content.name
+                tool_args = content.input
+
+                # Execute tool call
+                result = self.session.call_tool(tool_name, tool_args)
+                final_text.append(f"[Calling tool {tool_name} with args {tool_args}]")
+
+                assistant_message_content.append(content)
+                messages.append({
+                    "role": "assistant",
+                    "content": assistant_message_content
+                })
+                messages.append({
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "tool_result",
+                            "tool_use_id": content.id,
+                            "content": result.content
+                        }
+                    ]
+                })
+
+                # Get next response from Claude
+                response = self.anthropic.messages.create(
+                    model="claude-3-5-sonnet-20241022",
+                    max_tokens=1000,
+                    messages=messages,
+                    tools=available_tools
+                )
+
+                final_text.append(response.content[0].text)
+
+        return "\n".join(final_text)
+
+    def chat_loop(self):
+        """Run an interactive chat loop"""
+        print("\nMCP Client Started!")
+        print("Type your queries or 'quit' to exit.")
+
+        while True:
+            try:
+                query = input("\nQuery: ").strip()
+
+                if query.lower() == 'quit':
+                    break
+
+                response = self.process_query(query)
+                print("\n" + response)
+
+            except Exception as e:
+                print(f"\nError: {str(e)}")
+
+    async def cleanup(self):
+        """Clean up resources"""
+        await self.exit_stack.aclose()
+
+client = MCPClient()
+try:
+    client.connect_to_server("mcp_server.py")
+    client.chat_loop()
+finally:
+    client.cleanup()
+
 with st.sidebar:
     uploaded_file = st.file_uploader("Choose a file")
     if uploaded_file is not None:
@@ -109,11 +180,8 @@ with st.sidebar:
     for file in st.session_state.files:
         # To read file as bytes:
         bytes_data = file.getvalue()
-        if file.type == "application/pdf":
-            string_data = load_pdf(bytes_data)
-        else:
-            stringio = StringIO(file.getvalue().decode("utf-8"))
-            string_data = stringio.read()
+        stringio = StringIO(file.getvalue().decode("utf-8"))
+        string_data = stringio.read()
 
         st.write(string_data)
 
