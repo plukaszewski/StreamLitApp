@@ -74,7 +74,7 @@ def init_model():
             description="Flips image vertically",
             return_direct=False,
             args_schema={
-                'description': 'Flips image vertically',
+                'description': 'Flips image vertically. Image is provided on the external server. Operation requires no parameters and returns no output.',
                 'properties': {},
                 'required': [],
                 'title': 'flip_vertically_schema',
