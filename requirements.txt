@@ -1,7 +1,9 @@
 PyMuPDF
 langchain_openai
+langchain
 pydantic
 faiss-cpu
 langchain_huggingface
 fastmcp
 asyncio
+langchain-mcp-adapters

@@ -1,15 +1,14 @@
 import streamlit as st
 import time
 from io import StringIO
-import os
 from typing import Optional
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from pydantic import Field, SecretStr
-import faiss
-import numpy as np
 from fastmcp import Client, FastMCP
 import asyncio
+from langchain_mcp_adapters.tools import load_mcp_tools
+from langchain.agents import AgentExecutor, create_react_agent
 
 async def main():
     ###########MCP###########
@@ -26,7 +25,7 @@ async def main():
     
     @mcp.tool()
     def test2(text: str) -> str:
-        """Test the availabilty of the Image Hander service"""
+        """Test the correctness of the setup"""
         return f"TEST2 SUCCESSFUL: {text}"
 
     #########################
@@ -47,7 +46,7 @@ async def main():
             super().__init__(base_url=st.secrets["BASE_URL"], openai_api_key=openai_api_key, **kwargs)
 
     template = """
-    You are an assistant for question-answering tasks.
+    You are an assistant for question-answering tasks. You have a set of tools to your disposal.
     If you don't know the answer, just say that you don't know. Use three sentences maximum and keep the answer concise.
     Question: {question} 
     Answer:
@@ -56,6 +55,12 @@ async def main():
     selected_model = "meta-llama/llama-3.3-8b-instruct:free"
 
     model = ChatOpenRouter(model_name = selected_model)
+
+    tools = await client.list_tools()
+
+    # Create and run the agent
+    agent = create_react_agent(model, tools)
+    agent_response = await agent.ainvoke({"messages": "Test the availability of Image Handler"})
 
     def answer_question(question, model):
         prompt = ChatPromptTemplate.from_template(template)
@@ -91,6 +96,8 @@ async def main():
 
             for tool in await client.list_tools():
                 st.text(tool.name)
+
+            st.text(agent_response.text)
 
             st.text(await client.call_tool("test", {"text": "test message"}))
 
