@@ -137,25 +137,7 @@ async def main():
             res = await client.call_tool("multiply", {"a": a, "b": b})
             return res
 
-        tools = [
-            Tool(
-                name = "Search WebMD",
-                func=duck_wrapper,
-                description="useful for when you need to answer medical and pharmalogical questions"
-            ),
-            Tool(
-                name = "ppp",
-                func=test,
-                description="Performs special operation 'ppp'",
-                return_direct=True
-            ),
-            Tool(
-                name = "Multiply",
-                func=mult,
-                description="multiplies two numbers",
-                return_direct=True
-            )
-        ]
+        tools = [convert_tool(client, t) for t in client.list_tools()]
 
         template = """You are personal assistant. You have access to the following tools:
 
