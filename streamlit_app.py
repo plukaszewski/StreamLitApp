@@ -34,7 +34,7 @@ def test():
 from langchain_openai import ChatOpenAI
 from langchain.agents import Tool
 
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import HumanMessage, SystemMessage
 
 from langgraph.prebuilt import create_react_agent
 from langgraph.prebuilt import create_react_agent
@@ -97,7 +97,14 @@ async def main():
             clear()
 
         if(st.button("TEST")):
-            response = st.session_state.agent.invoke({"messages": [HumanMessage(content="whats the weather in sf?")]})
+            response = st.session_state.agent.invoke(
+                {
+                    "messages": [
+                        SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image.")
+                        HumanMessage(content="Is service working?"),
+
+                    ]
+                })
             st.text(response["messages"][-1].content)
 
 
