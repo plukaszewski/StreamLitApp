@@ -48,6 +48,7 @@ def roll(delta: int):
 
 #######################
 
+
 ##########TEST#########
 
 def test() -> str:
@@ -101,7 +102,9 @@ def init_MCP_SERVER():
 		img.save("image.jpg")
 		return "SUCCESS"
 
-	mcp.run()
+	return mcp
+
+#######################
 
 
 ##########LLM##########
@@ -127,121 +130,111 @@ class ChatOpenRouter(ChatOpenAI):
 			super().__init__(base_url=st.secrets["BASE_URL"], openai_api_key=openai_api_key, **kwargs)
 	
 
+
+
+
 async def init_model():
+	async with Client(mcp) as client:
+
+		mcp_tools = client.list_tools()
+
+		tools = [
+			StructuredTool.from_function(
+				name="test",
+				func=test,
+				description="Tool useful to test if service is working",),
+			StructuredTool.from_function(
+				name="flip horizontally",
+				func=flip_horizontally,
+				description="Flips image horizontally. Image is provided on the external server. ",),
+			StructuredTool.from_function(
+				name="flip vertically",
+				func=flip_vertically,
+				description="Flips image vertically. Image is provided on the external server. ",),
+			StructuredTool.from_function(
+				name="rotate 90",
+				func=rotate_90,
+				description="Rotates image by 90 degrees. Image is provided on the external server. ",),
+			StructuredTool.from_function(
+				name="roll",
+				func=roll,
+				description="Rolls image by amout of pixels provided. Image is provided on the external server. ",),
+		]
+
+		st.session_state.tools = tools
+		st.session_state.mcp_tools = mcp_tools
+
+		agent = create_react_agent(model, tools)
+
+		st.session_state.agent = agent
+	
+
+
+async def main():
+	if "agent" not in st.session_state:
+		await init_model()
+
+	if "file" not in st.session_state:
+			st.session_state.file = None
+
 	selected_model = "deepseek/deepseek-chat-v3-0324:free"
 	model = ChatOpenRouter(model_name = selected_model)
 
-
-
-	tools = [
-		StructuredTool.from_function(
-			name="test",
-			func=test,
-			description="Tool useful to test if service is working",),
-		StructuredTool.from_function(
-			name="flip horizontally",
-			func=flip_horizontally,
-			description="Flips image horizontally. Image is provided on the external server. ",),
-		StructuredTool.from_function(
-			name="flip vertically",
-			func=flip_vertically,
-			description="Flips image vertically. Image is provided on the external server. ",),
-		StructuredTool.from_function(
-			name="rotate 90",
-			func=rotate_90,
-			description="Rotates image by 90 degrees. Image is provided on the external server. ",),
-		StructuredTool.from_function(
-			name="roll",
-			func=roll,
-			description="Rolls image by amout of pixels provided. Image is provided on the external server. ",),
-	]
-
-	st.session_state.tools = tools
-
-	agent = create_react_agent(model, tools)
-
-	st.session_state.agent = agent
-
-
-if "file" not in st.session_state:
-		st.session_state.file = None
-
-if "agent" not in st.session_state:
-	await init_model()
-
-st.header("Image Tools")
-
-col1, col2 = st.columns(2)
-
-with st.sidebar:
-	for tool in st.session_state.tools:
-		st.text(tool.name)
 	
-with col1:
-	if st.session_state.file is None:
-		uploaded_file = st.file_uploader("Choose a file", type=["jpg"])
-		if uploaded_file is not None:
-			st.session_state.file = uploaded_file
-			fname = uploaded_file.name
-			b = uploaded_file.getvalue()
-			with open("image.jpg", "wb") as f:
-				f.write(b)
-			st.rerun()
 
-	if(st.button("Flip Vertically")):
-		flip_vertically()
+		st.header("Image Tools")
 
-	if(st.button("Clear")):
-		clear()
+		col1, col2 = st.columns(2)
 
-	if(st.button("TEST")):
-		response = st.session_state.agent.invoke(
-			{
-				"messages": [
-					SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the externally and your job is only to invoke correct functions to modify the picture. With every answer try to use one of your tools!"),
-					HumanMessage(content="whats the weather in sf?"),
+		with st.sidebar:
+			for tool in st.session_state.tools:
+				st.text(tool.name)
+	
+		with col1:
+			if st.session_state.file is None:
+				uploaded_file = st.file_uploader("Choose a file", type=["jpg"])
+				if uploaded_file is not None:
+					st.session_state.file = uploaded_file
+					fname = uploaded_file.name
+					b = uploaded_file.getvalue()
+					with open("image.jpg", "wb") as f:
+						f.write(b)
+					st.rerun()
 
-				]
-			})
-		st.text(response["messages"][-1].content)
+			if(st.button("Flip Vertically")):
+				flip_vertically()
 
-	if(st.button("TEST2")):
-		response = st.session_state.agent.invoke(
-			{
-				"messages": [
-					SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the externally and your job is only to invoke correct functions to modify the picture. With every answer try to use one of your tools!"),
-					HumanMessage(content="Flip the image vertically"),
+			if(st.button("Clear")):
+				clear()
 
-				]
-			})
-		st.text(response["messages"][-1].content)
+			if(st.button("V")):
+				response = st.session_state.agent.invoke(
+					{
+						"messages": [
+							SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the externally and your job is only to invoke correct functions to modify the picture. With every answer try to use one of your tools!"),
+							HumanMessage(content="Flip the image vertically"),
 
-	if(st.button("TEST3")):
-		response = st.session_state.agent.invoke(
-			{
-				"messages": [
-					SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the externally and your job is only to invoke correct functions to modify the picture. With every answer try to use one of your tools!"),
-					HumanMessage(content="Test if service is working"),
+						]
+					})
+				st.text(response["messages"][-1].content)
+				
+			if(st.button("T")):
+				for tool in st.session_state.mcp_tools
+					st.text(tool)
 
-				]
-			})
-		st.text(response["messages"][-1].content)
+			if prompt := st.chat_input("What shall I do?"):
+				response = st.session_state.agent.invoke(
+					{
+						"messages": [
+							SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the externally and your job is only to invoke correct functions to modify the picture. With every answer try to use one of your tools!"),
+							HumanMessage(content=prompt),
+						]
+					})
+				st.text(response["messages"][-1].content)
 
-	if(st.button("TEST4")):
-		test()
+	with col2:
+		if st.session_state.file is not None:
+			st.image("image.jpg")
 
-	if prompt := st.chat_input("What shall I do?"):
-		response = st.session_state.agent.invoke(
-			{
-				"messages": [
-					SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the externally and your job is only to invoke correct functions to modify the picture. With every answer try to use one of your tools!"),
-					HumanMessage(content=prompt),
-				]
-			})
-		st.text(response["messages"][-1].content)
-
-
-
-with col2:
-	if st.session_state.file is not None:
-		st.image("image.jpg")
+if __name__ == "__main__":
+    asyncio.run(main())
