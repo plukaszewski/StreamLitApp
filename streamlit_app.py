@@ -146,7 +146,7 @@ async def main():
             # Create and run the agent
             tools = [convert(client, t) for t in await client.list_tools()]
             agent = create_react_agent(model, tools)
-            agent_response = await agent.ainvoke({"messages": "Test the availability of Image Handler"})
+            agent_response = await agent.ainvoke({"messages": "Test the availability of Image Handler with text '12345'"})
             st.text(agent_response)
 
             # Display assistant response in chat message container
