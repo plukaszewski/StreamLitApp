@@ -60,15 +60,15 @@ def init_model():
         StructuredTool.from_function(
             name = "test",
             func=test,
-            description="Tool useful to test if service is working"
-            return_direct=True
+            description="Tool useful to test if service is working",
+            return_direct=True,
             args_schema=BaseModel()),
         StructuredTool.from_function(
             name = "flip vertically",
             func=flip_vertically,
-            description="Flips image vertically"
-            return_direct=False
-            args_schema=BaseModel()).
+            description="Flips image vertically",
+            return_direct=False,
+            args_schema=BaseModel())
     ]
 
     agent = create_react_agent(model, tools)
