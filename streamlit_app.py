@@ -109,7 +109,7 @@ with col1:
 		response = st.session_state.agent.invoke(
 			{
 				"messages": [
-					SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the external server and your job is only to invoke correct functions to modify the picture."),
+					SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the externally and your job is only to invoke correct functions to modify the picture. With every answer try to use one of your tools!"),
 					HumanMessage(content="whats the weather in sf?"),
 
 				]
@@ -120,7 +120,7 @@ with col1:
 		response = st.session_state.agent.invoke(
 			{
 				"messages": [
-					SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the external server and your job is only to invoke correct functions to modify the picture."),
+					SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the externally and your job is only to invoke correct functions to modify the picture. With every answer try to use one of your tools!"),
 					HumanMessage(content="Flip the image vertically"),
 
 				]
@@ -131,7 +131,7 @@ with col1:
 		response = st.session_state.agent.invoke(
 			{
 				"messages": [
-					SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the external server and your job is only to invoke correct functions to modify the picture."),
+					SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the externally and your job is only to invoke correct functions to modify the picture. With every answer try to use one of your tools!"),
 					HumanMessage(content="Test if service is working"),
 
 				]
