@@ -18,7 +18,7 @@ NonTextContent = ImageContent | EmbeddedResource
 
 from langchain_mcp_adapters.tools import _convert_call_tool_result
 
-from langchain.agents import Tool, AgentExecutor, LLMSingleActionAgent, AgentOutputParser
+from langchain.agents import BaseTool, AgentExecutor, LLMSingleActionAgent, AgentOutputParser
 from langchain.prompts import StringPromptTemplate
 
 from langchain.chains import LLMChain
@@ -163,7 +163,7 @@ async def main():
             # The template to use
             template: str
             # The list of tools available
-            tools: List[Tool]
+            tools: List[BaseTool]
 
             def format(self, **kwargs) -> str:
                 # Get the intermediate steps (AgentAction, Observation tuples)
