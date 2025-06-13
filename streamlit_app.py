@@ -62,7 +62,7 @@ def init_model():
         StructuredTool.from_function(
             name="test",
             func=test,
-            description="Tool useful to test if service is working",)
+            description="Tool useful to test if service is working",),
         StructuredTool.from_function(
             name="flip vertically",
             func=flip_vertically,
