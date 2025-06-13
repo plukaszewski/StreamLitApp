@@ -76,70 +76,70 @@ def init_model():
 if "file" not in st.session_state:
 		st.session_state.file = None
 
-	if "agent" not in st.session_state:
-		init_model()
+if "agent" not in st.session_state:
+	init_model()
 
-	st.header("Image Tools")
+st.header("Image Tools")
 
-	col1, col2 = st.columns(2)
+col1, col2 = st.columns(2)
 	
-	with col1:
-		if st.session_state.file is None:
-			uploaded_file = st.file_uploader("Choose a file", type=["jpg", "jpeg", "png"])
-			if uploaded_file is not None:
-				st.session_state.file = uploaded_file
-				b = uploaded_file.getvalue()
-				with open(uploaded_file.name, "wb") as f:
-					f.write(b)
-				st.rerun()
+with col1:
+	if st.session_state.file is None:
+		uploaded_file = st.file_uploader("Choose a file", type=["jpg", "jpeg", "png"])
+		if uploaded_file is not None:
+			st.session_state.file = uploaded_file
+			b = uploaded_file.getvalue()
+			with open(uploaded_file.name, "wb") as f:
+				f.write(b)
+			st.rerun()
 
-		if(st.button("Flip Vertically")):
-			flip_vertically()
+	if(st.button("Flip Vertically")):
+		flip_vertically()
 
-		if(st.button("Clear")):
-			clear()
+	if(st.button("Clear")):
+		clear()
 
-		if(st.button("TEST")):
-			response = st.session_state.agent.invoke(
-				{
-					"messages": [
-						SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the external server and your job is only to invoke correct functions to modify the picture."),
-						HumanMessage(content="whats the weather in sf?"),
+	if(st.button("TEST")):
+		response = st.session_state.agent.invoke(
+			{
+				"messages": [
+					SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the external server and your job is only to invoke correct functions to modify the picture."),
+					HumanMessage(content="whats the weather in sf?"),
 
-					]
-				})
-			st.text(response["messages"][-1].content)
+				]
+			})
+		st.text(response["messages"][-1].content)
 
-		if(st.button("TEST2")):
-			response = st.session_state.agent.invoke(
-				{
-					"messages": [
-						SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the external server and your job is only to invoke correct functions to modify the picture."),
-						HumanMessage(content="Flip the image vertically"),
+	if(st.button("TEST2")):
+		response = st.session_state.agent.invoke(
+			{
+				"messages": [
+					SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the external server and your job is only to invoke correct functions to modify the picture."),
+					HumanMessage(content="Flip the image vertically"),
 
-					]
-				})
-			st.text(response["messages"][-1].content)
+				]
+			})
+		st.text(response["messages"][-1].content)
 
-		if(st.button("TEST3")):
-			response = st.session_state.agent.invoke(
-				{
-					"messages": [
-						SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the external server and your job is only to invoke correct functions to modify the picture."),
-						HumanMessage(content="Test if service is working"),
+	if(st.button("TEST3")):
+		response = st.session_state.agent.invoke(
+			{
+				"messages": [
+					SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the external server and your job is only to invoke correct functions to modify the picture."),
+					HumanMessage(content="Test if service is working"),
 
-					]
-				})
-			st.text(response["messages"][-1].content)
+				]
+			})
+		st.text(response["messages"][-1].content)
 
-		if(st.button("TEST4")):
-			test()
+	if(st.button("TEST4")):
+		test()
 
 
 
-	with col2:
-		if st.session_state.file is not None:
-			st.image(st.session_state.file.name)
+with col2:
+	if st.session_state.file is not None:
+		st.image(st.session_state.file.name)
 
-		if "test"  in st.session_state:
-			st.text(a)
+	if "test"  in st.session_state:
+		st.text(a)
