@@ -9,6 +9,7 @@ from fastmcp import Client, FastMCP
 import asyncio
 from langgraph.prebuilt import create_react_agent
 from langchain.agents import AgentExecutor
+from langchain_mcp_adapters.tools import convert_mcp_tool_to_langchain_tool
 
 async def main():
     ###########MCP###########
