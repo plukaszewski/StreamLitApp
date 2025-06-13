@@ -9,3 +9,4 @@ asyncio
 langchain_mcp_adapters
 langgraph
 duckduckgo-search
+langchain_community
