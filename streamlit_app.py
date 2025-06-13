@@ -60,7 +60,7 @@ def test() -> str:
 ##########MCP##########
 from fastmcp import Client, FastMCP
 
-def init_MCP_SERVER():
+def init_mcp_sever():
 	mcp = FastMCP("Image Handler")
 
 	@mcp.tool()
@@ -134,9 +134,26 @@ class ChatOpenRouter(ChatOpenAI):
 
 
 async def init_model():
-	async with Client(init_MCP_SERVER()) as client:
+	async with Client(init_mcp_sever()) as client:
 
 		mcp_tools = await client.list_tools()
+
+		def convert_tool(cc, mcptool):
+
+			async def call_tool(
+				**arguments: dict[str, Any],
+				) -> tuple[str | list[str], list[NonTextContent] | None]:
+				call_tool_result = await c.call_tool(mcptool.name, arguments)
+				return _convert_call_tool_result(call_tool_result)
+
+			return StructuredTool(
+			name=mcptool.name,
+			description=mcptool.description or "",
+			args_schema=mcptool.inputSchema,
+			coroutine=call_tool,
+			response_format="content_and_artifact",
+			metadata=mcptool.annotations.model_dump() if mcptool.annotations else None,
+			)
 
 		tools = [
 			StructuredTool.from_function(
@@ -160,6 +177,8 @@ async def init_model():
 				func=roll,
 				description="Rolls image by amout of pixels provided. Image is provided on the external server. ",),
 		]
+
+		tools = [convert_tool(client, t) for t in mcp_tools]
 
 		st.session_state.tools = tools
 		st.session_state.mcp_tools = mcp_tools
