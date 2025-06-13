@@ -36,10 +36,10 @@ async def main():
         return f"Response: {response}"
 
     @mcp.tool()
-    def test(text: str) -> str:
-        """Test the availabilty of the Image Hander service"""
+    def test() -> str:
+        """Returns the configuration of the Image Hander service"""
         st.session_state.tested += 1
-        return f"TEST SUCCESSFUL: {text}"
+        return f"TEST SUCCESSFUL"
     
     @mcp.tool()
     def test2(text: str) -> str:
@@ -132,7 +132,7 @@ async def main():
             Tool(
                 name = "Test Image Handler",
                 func=test,
-                description="testing the functionality of Image Handler",
+                description="returns configuration of Image Handler",
                 return_direct=True
             )
         ]
@@ -271,7 +271,7 @@ async def main():
                 st.markdown(prompt)
 
             #st.text(agent_executor.run("How can I treat a spained ankle?"))
-            st.text(agent_executor.run("Test the functionality of Image Handler with text 'hello' and tell me what it returned"))
+            st.text(agent_executor.run("Get the configuration of Image Handler"))
 
             # Display assistant response in chat message container
             with st.chat_message("assistant"):
