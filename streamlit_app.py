@@ -38,7 +38,7 @@ async def main():
     @mcp.tool()
     def test(text: str) -> str:
         """Test the availabilty of the Image Hander service"""
-        st.session_state.tested = True
+        st.session_state.tested += 1
         return f"TEST SUCCESSFUL: {text}"
     
     @mcp.tool()
@@ -110,7 +110,7 @@ async def main():
         st.session_state.init = True
 
     if "tested" not in st.session_state:
-        st.session_state.tested = False
+        st.session_state.tested = 0
 
     async with Client(mcp) as client:
         search = DuckDuckGoSearchRun()
