@@ -288,7 +288,8 @@ async def main():
                 st.markdown(prompt)
 
             #st.text(agent_executor.run("How can I treat a spained ankle?"))
-            st.text(agent_executor.run("Performs special operation ppp"))
+            st.text(agent_executor.run("List your tools"))
+            st.text(agent_executor.run("Performs special operation ppp from your tools"))
 
             # Display assistant response in chat message container
             with st.chat_message("assistant"):
