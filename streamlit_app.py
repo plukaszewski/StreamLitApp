@@ -127,12 +127,12 @@ async def main():
             search_results = search.run(f"site:webmd.com {input_text}")
             return search_results
 
-        def test(text):
+        async def test(text):
             st.session_state.tested2 += 1
             res = await client.call_tool("perform")
             return res
 
-        def mult(a, b):
+        async  def mult(a, b):
             st.session_state.tested2 += 1
             res = await client.call_tool("multiply", {"a": a, "b": b})
             return res
