@@ -318,7 +318,8 @@ async def main():
 
 						]
 					})
-				st.text(response["messages"][-1].content)
+				for t in response["messages"]
+					st.text(t.content)
 				
 			if(st.button("T")):
 				for tool in st.session_state.mcp_tools:
