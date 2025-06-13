@@ -164,6 +164,8 @@ async def init_model():
 		st.session_state.tools = tools
 		st.session_state.mcp_tools = mcp_tools
 
+		selected_model = "deepseek/deepseek-chat-v3-0324:free"
+		model = ChatOpenRouter(model_name = selected_model)
 		agent = create_react_agent(model, tools)
 
 		st.session_state.agent = agent
