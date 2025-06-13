@@ -32,16 +32,16 @@ def rotate_90() -> str:
 def roll(delta: int):
 	img = Image.open("image.jpg")
 	xsize, ysize = img.size
+	delta = delta % xsize
 
-    delta = delta % xsize
-    if delta == 0:
+	if delta == 0:
 		img.save("image.jpg")
-        return "SUCCESS"
+		return "SUCCESS"
 
-    part1 = img.crop((0, 0, delta, ysize))
-    part2 = img.crop((delta, 0, xsize, ysize))
-    img.paste(part1, (xsize - delta, 0, xsize, ysize))
-    img.paste(part2, (0, 0, xsize - delta, ysize))
+	part1 = img.crop((0, 0, delta, ysize))
+	part2 = img.crop((delta, 0, xsize, ysize))
+	img.paste(part1, (xsize - delta, 0, xsize, ysize))
+	img.paste(part2, (0, 0, xsize - delta, ysize))
 
 	img.save("image.jpg")
 	return "SUCCESS"
