@@ -1,13 +1,2 @@
-PyMuPDF
-langchain_openai
-langchain
-pydantic
-faiss-cpu
-langchain_huggingface
-fastmcp
 asyncio
-langchain_mcp_adapters
-langgraph
-duckduckgo-search
-langchain_community
 Pillow
