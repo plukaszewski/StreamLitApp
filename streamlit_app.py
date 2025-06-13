@@ -214,7 +214,7 @@ async def main():
 			st.text(response["messages"][-1].content)
 				
 		if(st.button("T")):
-			for tool in st.session_state.mcp_tools
+			for tool in st.session_state.mcp_tools:
 				st.text(tool)
 
 		if prompt := st.chat_input("What shall I do?"):
