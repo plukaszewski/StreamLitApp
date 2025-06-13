@@ -62,7 +62,8 @@ from fastmcp import Client, FastMCP
 from mcp.types import (
     EmbeddedResource,
     ImageContent,
-	CallToolResult
+	CallToolResult,
+	TextContent
 )
 NonTextContent = ImageContent | EmbeddedResource
 #from langchain_mcp_adapters.tools import _convert_call_tool_result
