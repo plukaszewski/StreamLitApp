@@ -64,7 +64,7 @@ from mcp.types import (
     ImageContent,
 )
 NonTextContent = ImageContent | EmbeddedResource
-from langchain_mcp_adapters.tools import _convert_call_tool_result
+#from langchain_mcp_adapters.tools import _convert_call_tool_result
 
 def init_mcp_sever():
 	mcp = FastMCP("Image Handler")
@@ -199,6 +199,28 @@ async def init_model():
 
 		st.session_state.agent = agent
 	
+
+def _convert_call_tool_result(
+    call_tool_result: CallToolResult,
+) -> tuple[str | list[str], list[NonTextContent] | None]:
+    text_contents: list[TextContent] = []
+    non_text_contents = []
+    for content in call_tool_result:
+        if isinstance(content, TextContent):
+            text_contents.append(content)
+        else:
+            non_text_contents.append(content)
+
+    tool_content: str | list[str] = [content.text for content in text_contents]
+    if not text_contents:
+        tool_content = ""
+    elif len(text_contents) == 1:
+        tool_content = tool_content[0]
+
+    if call_tool_result.isError:
+        raise ToolException(tool_content)
+
+    return tool_content, non_text_contents or None
 
 
 async def main():
