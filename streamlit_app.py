@@ -5,6 +5,7 @@ from PIL import Image
 
 def clear():
     st.session_state.file = None
+    st.rerun()
 
 def flip_vertically():
     if st.session_state.file is not None:
@@ -30,6 +31,7 @@ async def main():
                 b = uploaded_file.getvalue()
                 with open(uploaded_file.name, "wb") as f:
                     f.write(b)
+                st.rerun()
 
         if(st.button("Flip Horizontally")):
             flip_vertically()
