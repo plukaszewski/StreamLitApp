@@ -250,7 +250,7 @@ async def main():
 
 		if(st.button("C")):
 			d = dict()
-			st.session_state.tools[0].run(d)
+			await st.session_state.tools[0].arun(d)
 
 		if prompt := st.chat_input("What shall I do?"):
 			response = st.session_state.agent.invoke(
