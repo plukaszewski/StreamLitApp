@@ -1,6 +1,7 @@
 import streamlit as st
 import os
 import asyncio
+from PIL import Image
 
 async def main():
 
@@ -18,10 +19,16 @@ async def main():
             b = uploaded_file.getvalue()
             with open(uploaded_file.name, "wb") as f:
                 f.write(b)
+        
+            img = Image.open(uploaded_file.name)
+
+            if(st.button("Flip Horizontally")):
+                img = img.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+                img.save(uploaded_file.name)
 
     with col2:
         if st.session_state.file is not None:
-                st.image(uploaded_file)
+            st.image(uploaded_file)
         
 
 if __name__ == "__main__":
