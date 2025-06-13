@@ -19,6 +19,7 @@ NonTextContent = ImageContent | EmbeddedResource
 from langchain_mcp_adapters.tools import _convert_call_tool_result
 
 from langchain_core.tools.base import BaseTool
+from langchain_core.prompts.base import BaseTool
 from langchain.agents import Tool, AgentExecutor, LLMSingleActionAgent, AgentOutputParser
 from langchain.prompts import StringPromptTemplate
 
@@ -160,7 +161,7 @@ async def main():
         Question: {input}
         {agent_scratchpad}"""
 
-        class CustomPromptTemplate(StringPromptTemplate):
+        class CustomPromptTemplate(BasePromptTemplate):
             # The template to use
             template: str
             # The list of tools available
