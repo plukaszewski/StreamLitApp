@@ -1,2 +1,4 @@
 asyncio
 Pillow
+langchain
+langgraph
