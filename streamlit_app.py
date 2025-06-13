@@ -74,7 +74,7 @@ async def main():
 
     async with Client(mcp) as client:
 
-        tools = await client.list_tools()
+        tools = await client.get_tools()
 
         # Create and run the agent
         agent = create_react_agent(model, tools)
