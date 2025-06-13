@@ -16,12 +16,14 @@ def flip_vertically():
         img = Image.open(st.session_state.file.name)
         img = img.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
         img.save(st.session_state.file.name)
+        return "SUCCESS"
+    return "FAIL"
 
 #######################
 
 ##########TEST#########
 
-def test(_):
+def test():
     if "test" not in st.session_state:
         st.session_state.test = 0
 
@@ -58,27 +60,13 @@ def init_model():
 
     tools = [
         StructuredTool.from_function(
-            name = "test",
+            name="test",
             func=test,
             description="Tool useful to test if service is working",
-            return_direct=True,
-            args_schema={
-                'description': 'Tool useful to test if service is working',
-                'properties': {},
-                'required': [],
-                'title': 'test_schema',
-                'type': 'object'}),
         StructuredTool.from_function(
-            name = "flip vertically",
+            name="flip vertically",
             func=flip_vertically,
             description="Flips image vertically",
-            return_direct=False,
-            args_schema={
-                'description': 'Flips image vertically. Image is provided on the external server. Operation requires no parameters and returns no output.',
-                'properties': {},
-                'required': [],
-                'title': 'flip_vertically_schema',
-                'type': 'object'}),
     ]
 
     agent = create_react_agent(model, tools)
