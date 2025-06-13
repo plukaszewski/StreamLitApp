@@ -157,7 +157,7 @@ async def main():
 
                 
 
-                #assistant_response = answer_question(prompt, model)
+                assistant_response = answer_question(prompt, model)
 
                 #assistant_response = model.chat.completions.create(model = st.secrets["MODEL"], messages = st.session_state.messages)
                 # Simulate stream of response with milliseconds delay
