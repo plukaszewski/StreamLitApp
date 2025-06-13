@@ -84,6 +84,9 @@ with st.sidebar:
         st.session_state.files = []
         uploaded_file = None
 
+    for tool in client.list_tools():
+        st.text(tool.name)
+
 st.caption("RAG")
 
 # Initialize chat history
