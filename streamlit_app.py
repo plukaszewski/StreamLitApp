@@ -8,7 +8,8 @@ def clear():
     st.rerun()
 
 def flip_vertically():
-    if st.session_state.file is not None:
+    if st.session_state.file is not None: 
+        st.text("t")
         img = Image.open(st.session_state.file.name)
         img = img.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
         img.save(st.session_state.file.name)
