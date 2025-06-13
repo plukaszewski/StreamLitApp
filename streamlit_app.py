@@ -8,16 +8,17 @@ from pydantic import BaseModel, Field, SecretStr
 from PIL import Image
 
 a = 0
+name = ""
 
 def clear():
 	st.session_state.file = None
 	st.rerun()
 
 def flip_vertically() -> str:
-	if st.session_state.file is not None:
-		img = Image.open(st.session_state.file.name)
+	if name is not "":
+		img = Image.open(name)
 		img = img.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
-		img.save(st.session_state.file.name)
+		img.save(name)
 		return "SUCCESS"
 	return "FAIL"
 
@@ -88,6 +89,7 @@ with col1:
 		uploaded_file = st.file_uploader("Choose a file", type=["jpg", "jpeg", "png"])
 		if uploaded_file is not None:
 			st.session_state.file = uploaded_file
+			name = uploaded_file.name
 			b = uploaded_file.getvalue()
 			with open(uploaded_file.name, "wb") as f:
 				f.write(b)
