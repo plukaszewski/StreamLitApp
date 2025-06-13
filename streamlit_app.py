@@ -157,7 +157,7 @@ async def main():
             "mcpServers": {
                 "playwright": {
                     "command": "uvx",
-                    "args": ["mcp_server.py"]
+                    "args": ["run mcp_server.py"]
                 }
             }
         }
