@@ -77,7 +77,7 @@ async def main():
         tools = await client.list_tools()
 
         # Create and run the agent
-        agent = create_react_agent(model, tools)
+        agent = create_react_agent("meta-llama/llama-3.3-8b-instruct:free", tools)
         agent_response = await agent.ainvoke({"messages": "Test the availability of Image Handler"})
 
         with st.sidebar:
