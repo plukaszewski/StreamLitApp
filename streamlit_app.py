@@ -100,12 +100,6 @@ async def main():
 
     async with Client(mcp) as client:
 
-        tools = [convert(client, t) for t in await client.list_tools()]
-
-        # Create and run the agent
-        agent = create_react_agent(model, tools)
-        agent_response = await agent.ainvoke({"messages": "Test the availability of Image Handler"})
-
         with st.sidebar:
             uploaded_file = st.file_uploader("Choose a file")
             if uploaded_file is not None:
@@ -126,7 +120,7 @@ async def main():
             for tool in await client.list_tools():
                 st.text(tool.name)
 
-            st.text(agent_response)
+            
 
             st.text(await client.call_tool("test", {"text": "test message"}))
 
@@ -149,11 +143,22 @@ async def main():
             with st.chat_message("user"):
                 st.markdown(prompt)
 
+            # Create and run the agent
+            tools = [convert(client, t) for t in await client.list_tools()]
+            agent = create_react_agent(model, tools)
+            agent_response = await agent.ainvoke({"messages": "Test the availability of Image Handler"})
+            st.text(agent_response)
+
             # Display assistant response in chat message container
             with st.chat_message("assistant"):
                 message_placeholder = st.empty()
                 full_response = ""
-                assistant_response = answer_question(prompt, model)
+                
+
+                
+
+                #assistant_response = answer_question(prompt, model)
+
                 #assistant_response = model.chat.completions.create(model = st.secrets["MODEL"], messages = st.session_state.messages)
                 # Simulate stream of response with milliseconds delay
                 for chunk in assistant_response.content.split():
