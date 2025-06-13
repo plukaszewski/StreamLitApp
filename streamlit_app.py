@@ -21,6 +21,7 @@ from langchain_mcp_adapters.tools import _convert_call_tool_result
 NonTextContent = ImageContent | EmbeddedResource
 
 from mcp_use import MCPAgent, MCPClient
+from dotenv import load_dotenv
 
 async def main():
     ###########MCP###########
@@ -152,8 +153,17 @@ async def main():
         #agent = create_react_agent(model, tools)
         #agent_response = await agent.ainvoke({"messages": "Test the availability of Image Handler with text '12345'"})
         #st.text(agent_response)
+        config = {
+            "mcpServers": {
+                "playwright": {
+                    "command": "python",
+                    "args": ["mcp_server.py"]
+                }
+            }
+        }
 
-        client = MCPClient(mcp)
+
+        client = MCPClient.from_dict(config)
         agent = MCPAgent(llm=model, client=client, max_steps=30)
         result = await agent.run("Test the availability of Image Handler with text '12345'", max_steps=30)
         st.text(result)
