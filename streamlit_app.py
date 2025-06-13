@@ -52,6 +52,8 @@ class ChatOpenRouter(ChatOpenAI):
             openai_api_key = openai_api_key or st.secrets["API_KEY"]
             super().__init__(base_url=st.secrets["BASE_URL"], openai_api_key=openai_api_key, **kwargs)
 
+class Input(BaseModel)
+
 def init_model():
     selected_model = "mistralai/devstral-small:free"
     model = ChatOpenRouter(model_name = selected_model)
@@ -62,13 +64,13 @@ def init_model():
             func=test,
             description="Tool useful to test if service is working",
             return_direct=True,
-            args_schema=BaseModel()),
+            args_schema=Input()),
         StructuredTool.from_function(
             name = "flip vertically",
             func=flip_vertically,
             description="Flips image vertically",
             return_direct=False,
-            args_schema=BaseModel())
+            args_schema=Input())
     ]
 
     agent = create_react_agent(model, tools)
