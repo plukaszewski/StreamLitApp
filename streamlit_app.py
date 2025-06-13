@@ -119,7 +119,7 @@ async def main():
             search_results = search.run(f"site:webmd.com {input_text}")
             return search_results
 
-        def test(input_text):
+        def test():
             res = client.call_tool("test")
             return res
 
