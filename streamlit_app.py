@@ -45,7 +45,11 @@ async def main():
             openai_api_key = openai_api_key or st.secrets["API_KEY"]
             super().__init__(base_url=st.secrets["BASE_URL"], openai_api_key=openai_api_key, **kwargs)
 
-    template = """
+    template = ChatOpenAI.ChatPromptTemplate([
+        ("human", "{question}")
+    ])
+    
+    """
     Answer questions with given template.
     Question: {question}
     Answer:
@@ -56,7 +60,7 @@ async def main():
     model = ChatOpenRouter(model_name = selected_model)
 
     def answer_question(question, model):
-        prompt = ChatOpenAI.ChatPromptTemplate.from_template(template)
+        prompt = template
         chain = prompt | model
         return chain.invoke({"question": question})
 
