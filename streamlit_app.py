@@ -225,8 +225,8 @@ async def main():
 
         output_parser = CustomOutputParser()
 
-        llm_chain = prompt | model
-        #LLMChain(llm=model, prompt=prompt)
+        llm_chain = LLMChain(llm=model, prompt=prompt)
+        #
 
         tool_names = [tool.name for tool in tools]
 
