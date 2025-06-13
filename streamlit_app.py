@@ -11,7 +11,7 @@ def clear():
     st.session_state.file = None
     st.rerun()
 
-def flip_vertically(): -> str
+def flip_vertically() -> str:
     if st.session_state.file is not None:
         img = Image.open(st.session_state.file.name)
         img = img.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
@@ -23,7 +23,7 @@ def flip_vertically(): -> str
 
 ##########TEST#########
 
-def test(): -> str
+def test() -> str:
     if "test" not in st.session_state:
         st.session_state.test = 0
 
