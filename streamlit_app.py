@@ -7,7 +7,7 @@ async def main():
     if "file" not in st.session_state:
         st.session_state.file = None
 
-    st.caption("Image Tools")
+    st.header("Image Tools")
 
     col1, col2 = st.columns(2)
     
