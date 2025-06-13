@@ -12,13 +12,14 @@ name = ""
 
 def clear():
 	st.session_state.file = None
+	global name = ""
 	st.rerun()
 
 def flip_vertically() -> str:
-	if name is not "":
-		img = Image.open(name)
+	if global name != "":
+		img = Image.open(global name)
 		img = img.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
-		img.save(name)
+		img.save(global name)
 		return "SUCCESS"
 	return "FAIL"
 
@@ -27,7 +28,7 @@ def flip_vertically() -> str:
 ##########TEST#########
 
 def test() -> str:
-	a += 1
+	global a += 1
 	return "TEST SUCCESSFULL"
 
 #######################
@@ -144,4 +145,4 @@ with col2:
 		st.image(st.session_state.file.name)
 
 	if "test"  in st.session_state:
-		st.text(a)
+		st.text(global a)
