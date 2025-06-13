@@ -132,7 +132,7 @@ async def main():
             )
         ]
 
-        template = """Answer the following questions as best you can, but speaking as compasionate medical professional. You have access to the following tools:
+        template = """You are personal assistant. You have access to the following tools:
 
         {tools}
 
@@ -147,7 +147,7 @@ async def main():
         Thought: I now know the final answer
         Final Answer: the final answer to the original input question
 
-        Begin! Remember to answer as a compansionate medical professional when giving your final answer.
+        Begin!
 
         Question: {input}
         {agent_scratchpad}"""
