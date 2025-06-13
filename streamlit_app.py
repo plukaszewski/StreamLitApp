@@ -132,7 +132,8 @@ async def main():
             Tool(
                 name = "Test Image Handler",
                 func=test,
-                description="testing the functionality of Image Handler"
+                description="testing the functionality of Image Handler",
+                return_direct=True
             )
         ]
 
