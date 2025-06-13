@@ -55,6 +55,55 @@ def test() -> str:
 
 #######################
 
+
+##########MCP##########
+from fastmcp import Client, FastMCP
+
+def init_MCP_SERVER():
+	mcp = FastMCP("Image Handler")
+
+	@mcp.tool()
+	def flip_vertically() -> str:
+		img = Image.open("image.jpg")
+		img = img.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+		img.save("image.jpg")
+		return "SUCCESS"
+
+	@mcp.tool()
+	def flip_horizontally() -> str:
+		img = Image.open("image.jpg")
+		img = img.transpose(Image.Transpose.FLIP_TOP_BOTTOM)
+		img.save("image.jpg")
+		return "SUCCESS"
+
+	@mcp.tool()
+	def rotate_90() -> str:
+		img = Image.open("image.jpg")
+		img = img.transpose(Image.Transpose.ROTATE_90)
+		img.save("image.jpg")
+		return "SUCCESS"
+
+	@mcp.tool()
+	def roll(delta: int):
+		img = Image.open("image.jpg")
+		xsize, ysize = img.size
+		delta = delta % xsize
+
+		if delta == 0:
+			img.save("image.jpg")
+			return "SUCCESS"
+
+		part1 = img.crop((0, 0, delta, ysize))
+		part2 = img.crop((delta, 0, xsize, ysize))
+		img.paste(part1, (xsize - delta, 0, xsize, ysize))
+		img.paste(part2, (0, 0, xsize - delta, ysize))
+
+		img.save("image.jpg")
+		return "SUCCESS"
+
+	mcp.run()
+
+
 ##########LLM##########
 from langchain_openai import ChatOpenAI
 from langchain.agents import Tool
@@ -76,10 +125,13 @@ class ChatOpenRouter(ChatOpenAI):
 		def __init__(self, openai_api_key: Optional[str] = None, **kwargs):
 			openai_api_key = openai_api_key or st.secrets["API_KEY"]
 			super().__init__(base_url=st.secrets["BASE_URL"], openai_api_key=openai_api_key, **kwargs)
+	
 
-def init_model():
+async def init_model():
 	selected_model = "deepseek/deepseek-chat-v3-0324:free"
 	model = ChatOpenRouter(model_name = selected_model)
+
+
 
 	tools = [
 		StructuredTool.from_function(
@@ -115,7 +167,7 @@ if "file" not in st.session_state:
 		st.session_state.file = None
 
 if "agent" not in st.session_state:
-	init_model()
+	await init_model()
 
 st.header("Image Tools")
 
