@@ -122,183 +122,121 @@ async def main():
     if "tested2" not in st.session_state:
         st.session_state.tested2 = 0
 
-    async with Client(mcp) as client:
-        search = DuckDuckGoSearchRun()
+    async def llm():
 
-        def duck_wrapper(input_text):
-            search_results = search.run(f"site:webmd.com {input_text}")
-            return search_results
+        async with Client(mcp) as client:
+            search = DuckDuckGoSearchRun()
 
-        async def test(text):
-            st.session_state.tested2 += 1
-            res = await client.call_tool("perform")
-            return res
+            def duck_wrapper(input_text):
+                search_results = search.run(f"site:webmd.com {input_text}")
+                return search_results
 
-        async  def mult(a, b):
-            st.session_state.tested2 += 1
-            res = await client.call_tool("multiply", {"a": a, "b": b})
-            return res
+            async def test(text):
+                st.session_state.tested2 += 1
+                res = await client.call_tool("perform")
+                return res
 
-        tools = [convert_tool(client, t) for t in await client.list_tools()]
+            async  def mult(a, b):
+                st.session_state.tested2 += 1
+                res = await client.call_tool("multiply", {"a": a, "b": b})
+                return res
 
-        template = """You are personal assistant. You have access to the following tools:
+            tools = [convert_tool(client, t) for t in await client.list_tools()]
 
-        {tools}
+            template = """You are personal assistant. You have access to the following tools:
 
-        Use the following format:
+            {tools}
 
-        Question: the input question you must answer
-        Thought: you should always think about what to do
-        Action: the action to take, should be one of [{tool_names}]
-        Action Input: the input to the action
-        Observation: the result of the action
-        ... (this Thought/Action/Action Input/Observation can repeat N times)
-        Thought: I now know the final answer
-        Final Answer: the final answer to the original input question
+            Use the following format:
 
-        Begin! Remember to always try using one of your tools!
+            Question: the input question you must answer
+            Thought: you should always think about what to do
+            Action: the action to take, should be one of [{tool_names}]
+            Action Input: the input to the action
+            Observation: the result of the action
+            ... (this Thought/Action/Action Input/Observation can repeat N times)
+            Thought: I now know the final answer
+            Final Answer: the final answer to the original input question
 
-        Question: {input}
-        {agent_scratchpad}"""
+            Begin! Remember to always try using one of your tools!
 
-        class CustomPromptTemplate(StructuredPrompt):
-            # The template to use
-            template: str
-            # The list of tools available
-            tools: List[BaseTool]
+            Question: {input}
+            {agent_scratchpad}"""
 
-            def format(self, **kwargs) -> str:
-                # Get the intermediate steps (AgentAction, Observation tuples)
-                # Format them in a particular way
-                intermediate_steps = kwargs.pop("intermediate_steps")
-                thoughts = ""
-                for action, observation in intermediate_steps:
-                    thoughts += action.log
-                    thoughts += f"\nObservation: {observation}\nThought: "
-                # Set the agent_scratchpad variable to that value
-                kwargs["agent_scratchpad"] = thoughts
-                # Create a tools variable from the list of tools provided
-                kwargs["tools"] = "\n".join([f"{tool.name}: {tool.description}" for tool in self.tools])
-                # Create a list of tool names for the tools provided
-                kwargs["tool_names"] = ", ".join([tool.name for tool in self.tools])
-                return self.template.format(**kwargs)
+            class CustomPromptTemplate(StructuredPrompt):
+                # The template to use
+                template: str
+                # The list of tools available
+                tools: List[BaseTool]
 
-        prompt = CustomPromptTemplate(
-            messages=None,
-            template=template,
-            tools=tools,
-            # This omits the `agent_scratchpad`, `tools`, and `tool_names` variables because those are generated dynamically
-            # This includes the `intermediate_steps` variable because that is needed
-            input_variables=["input", "intermediate_steps"]
-        )
+                def format(self, **kwargs) -> str:
+                    # Get the intermediate steps (AgentAction, Observation tuples)
+                    # Format them in a particular way
+                    intermediate_steps = kwargs.pop("intermediate_steps")
+                    thoughts = ""
+                    for action, observation in intermediate_steps:
+                        thoughts += action.log
+                        thoughts += f"\nObservation: {observation}\nThought: "
+                    # Set the agent_scratchpad variable to that value
+                    kwargs["agent_scratchpad"] = thoughts
+                    # Create a tools variable from the list of tools provided
+                    kwargs["tools"] = "\n".join([f"{tool.name}: {tool.description}" for tool in self.tools])
+                    # Create a list of tool names for the tools provided
+                    kwargs["tool_names"] = ", ".join([tool.name for tool in self.tools])
+                    return self.template.format(**kwargs)
 
-        class CustomOutputParser(AgentOutputParser):
-            def parse(self, llm_output: str) -> Union[AgentAction, AgentFinish]:
-                # Check if agent should finish
-                if "Final Answer:" in llm_output:
-                    return AgentFinish(
-                        # Return values is generally always a dictionary with a single `output` key
-                        # It is not recommended to try anything else at the moment :)
-                        return_values={"output": llm_output.split("Final Answer:")[-1].strip()},
-                        log=llm_output,
-                    )
-                # Parse out the action and action input
-                regex = r"Action\s*\d*\s*:(.*?)\nAction\s*\d*\s*Input\s*\d*\s*:[\s]*(.*)"
-                match = re.search(regex, llm_output, re.DOTALL)
-                if not match:
-                    raise ValueError(f"Could not parse LLM output: `{llm_output}`")
-                action = match.group(1).strip()
-                action_input = match.group(2)
-                # Return the action and action input
-                return AgentAction(tool=action, tool_input=action_input.strip(" ").strip('"'), log=llm_output)
+            prompt = CustomPromptTemplate(
+                messages=None,
+                template=template,
+                tools=tools,
+                # This omits the `agent_scratchpad`, `tools`, and `tool_names` variables because those are generated dynamically
+                # This includes the `intermediate_steps` variable because that is needed
+                input_variables=["input", "intermediate_steps"]
+            )
 
-        output_parser = CustomOutputParser()
+            class CustomOutputParser(AgentOutputParser):
+                def parse(self, llm_output: str) -> Union[AgentAction, AgentFinish]:
+                    # Check if agent should finish
+                    if "Final Answer:" in llm_output:
+                        return AgentFinish(
+                            # Return values is generally always a dictionary with a single `output` key
+                            # It is not recommended to try anything else at the moment :)
+                            return_values={"output": llm_output.split("Final Answer:")[-1].strip()},
+                            log=llm_output,
+                        )
+                    # Parse out the action and action input
+                    regex = r"Action\s*\d*\s*:(.*?)\nAction\s*\d*\s*Input\s*\d*\s*:[\s]*(.*)"
+                    match = re.search(regex, llm_output, re.DOTALL)
+                    if not match:
+                        raise ValueError(f"Could not parse LLM output: `{llm_output}`")
+                    action = match.group(1).strip()
+                    action_input = match.group(2)
+                    # Return the action and action input
+                    return AgentAction(tool=action, tool_input=action_input.strip(" ").strip('"'), log=llm_output)
 
-        llm_chain = LLMChain(llm=model, prompt=prompt)
-        #
+            output_parser = CustomOutputParser()
 
-        tool_names = [tool.name for tool in tools]
+            llm_chain = LLMChain(llm=model, prompt=prompt)
+            #
 
-        agent = LLMSingleActionAgent(
-            llm_chain=llm_chain,
-            output_parser=output_parser,
-            stop=["\nObservation:"],
-            allowed_tools=tool_names
-        )
+            tool_names = [tool.name for tool in tools]
 
-        agent_executor = AgentExecutor.from_agent_and_tools(agent=agent,
-                                                        tools=tools,
-                                                        verbose=True)
+            agent = LLMSingleActionAgent(
+                llm_chain=llm_chain,
+                output_parser=output_parser,
+                stop=["\nObservation:"],
+                allowed_tools=tool_names
+            )
+
+            agent_executor = AgentExecutor.from_agent_and_tools(agent=agent,
+                                                            tools=tools,
+                                                            verbose=True)
+            
+    uploaded_file = st.file_uploader("Choose a file", type=["jpg", "jpeg", "png"])
+    if uploaded_file is not None:
+        st.session_state.file = uploaded_file
+
     
-    
-
-    
-
-        with st.sidebar:
-            uploaded_file = st.file_uploader("Choose a file")
-            if uploaded_file is not None:
-                st.session_state.files.append(uploaded_file)
-
-            for file in st.session_state.files:
-                # To read file as bytes:
-                bytes_data = file.getvalue()
-                stringio = StringIO(file.getvalue().decode("utf-8"))
-                string_data = stringio.read()
-
-                st.write(string_data)
-
-            if st.button("Clear"):
-                st.session_state.files = []
-                uploaded_file = None
-
-            for tool in await client.list_tools():
-                st.text(tool.name)
-
-            #st.text(await client.call_tool("test"))
-            st.text(st.session_state.tested)
-            st.text(st.session_state.tested2)
-
-        st.caption("MCP")
-
-        # Initialize chat history
-        if "messages" not in st.session_state:
-            st.session_state.messages = [{"role": "assistant", "content": "Let's start chatting! 👇"}]
-
-        # Display chat messages from history on app rerun
-        for message in st.session_state.messages:
-            with st.chat_message(message["role"]):
-                st.markdown(message["content"])
-
-        # Accept user input
-        if prompt := st.chat_input("What is up?"):
-            # Add user message to chat history
-            st.session_state.messages.append({"role": "user", "content": prompt})
-            # Display user message in chat message container
-            with st.chat_message("user"):
-                st.markdown(prompt)
-
-            st.text(agent_executor.run("Performs special operation ppp from your tools"))
-
-            # Display assistant response in chat message container
-            with st.chat_message("assistant"):
-                message_placeholder = st.empty()
-                full_response = ""
-
-                #assistant_response = answer_question(prompt, model)
-
-                assistant_response = ["XD"]
-
-                #assistant_response = model.chat.completions.create(model = st.secrets["MODEL"], messages = st.session_state.messages)
-                # Simulate stream of response with milliseconds delay
-                #for chunk in assistant_response.content.split():
-                for chunk in assistant_response:
-                    full_response += chunk + " "
-                    time.sleep(0.05)
-                    # Add a blinking cursor to simulate typing
-                    message_placeholder.markdown(full_response + "▌")
-                message_placeholder.markdown(full_response)
-            # Add assistant response to chat history
-            st.session_state.messages.append({"role": "assistant", "content": full_response})
 
 if __name__ == "__main__":
     asyncio.run(main())
