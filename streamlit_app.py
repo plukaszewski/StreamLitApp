@@ -76,7 +76,7 @@ async def main():
     Answer:
     """
 
-    selected_model = "meta-llama/llama-3.3-8b-instruct:free"
+    selected_model = "mistralai/devstral-small:free"
 
     model = ChatOpenRouter(model_name = selected_model)
 
