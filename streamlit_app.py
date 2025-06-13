@@ -71,7 +71,7 @@ def init_mcp_sever():
 
 	@mcp.tool()
 	def flip_vertically() -> str:
-	"""Flips image horizontally. Image is provided on the external server. """
+		"""Flips image horizontally. Image is provided on the external server. """
 		img = Image.open("image.jpg")
 		img = img.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
 		img.save("image.jpg")
@@ -79,7 +79,7 @@ def init_mcp_sever():
 
 	@mcp.tool()
 	def flip_horizontally() -> str:
-	"""Flips image vertically. Image is provided on the external server. """
+		"""Flips image vertically. Image is provided on the external server. """
 		img = Image.open("image.jpg")
 		img = img.transpose(Image.Transpose.FLIP_TOP_BOTTOM)
 		img.save("image.jpg")
@@ -87,7 +87,7 @@ def init_mcp_sever():
 
 	@mcp.tool()
 	def rotate_90() -> str:
-	"""Rotates image by 90 degrees. Image is provided on the external server. """
+		"""Rotates image by 90 degrees. Image is provided on the external server. """
 		img = Image.open("image.jpg")
 		img = img.transpose(Image.Transpose.ROTATE_90)
 		img.save("image.jpg")
@@ -95,7 +95,7 @@ def init_mcp_sever():
 
 	@mcp.tool()
 	def roll(delta: int):
-	"""Rolls image by amout of pixels provided. Image is provided on the external server. """
+		"""Rolls image by amout of pixels provided. Image is provided on the external server. """
 		img = Image.open("image.jpg")
 		xsize, ysize = img.size
 		delta = delta % xsize
