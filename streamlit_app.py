@@ -22,9 +22,6 @@ def test(text: str) -> str:
     """Test the availabilty of the Image Hander service"""
     return f"TEST SUCCESSFUL: {text}"
 
-if __name__ == "__main__":
-    mcp.run(transport='stdio')
-
 #########################
 
 
