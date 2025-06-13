@@ -36,10 +36,10 @@ async def main():
         return f"Response: {response}"
 
     @mcp.tool()
-    def perform() -> str:
+    def perform(text) -> str:
         """Performs special operation 'ppp'"""
         st.session_state.tested += 1
-        return f"TEST SUCCESSFUL"
+        return f"TEST SUCCESSFUL: {text}"
     
     @mcp.tool()
     def test2(text: str) -> str:
@@ -128,9 +128,9 @@ async def main():
             search_results = search.run(f"site:webmd.com {input_text}")
             return search_results
 
-        def test():
+        def test(text):
             st.session_state.tested2 += 1
-            res = client.call_tool("perform")
+            res = client.call_tool("perform", {"text": text})
             return res
 
         def mult(a, b):
