@@ -38,6 +38,7 @@ async def main():
     @mcp.tool()
     def test(text: str) -> str:
         """Test the availabilty of the Image Hander service"""
+        st.session_state.tested = True
         return f"TEST SUCCESSFUL: {text}"
     
     @mcp.tool()
@@ -107,6 +108,9 @@ async def main():
 
     if "init" not in st.session_state:
         st.session_state.init = True
+
+    if "tested" not in st.session_state:
+        st.session_state.tested = False
 
     async with Client(mcp) as client:
         search = DuckDuckGoSearchRun()
@@ -244,6 +248,7 @@ async def main():
                 st.text(tool.name)
 
             st.text(await client.call_tool("test", {"text": "test message"}))
+            st.text(st.session_state.tested)
 
         st.caption("MCP")
 
