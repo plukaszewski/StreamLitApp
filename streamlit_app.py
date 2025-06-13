@@ -117,7 +117,7 @@ async def main():
             clear()
 
         if(st.button("TEST")):
-            for step in st.session_state.stream(
+            for step in st.session_state.agent.stream(
                 {
                     "messages": [
                         SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image."),
