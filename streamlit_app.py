@@ -263,7 +263,7 @@ async def main():
 
 		with st.sidebar:
 			for tool in st.session_state.tools:
-				st.markdown(f"###### **{tool.name}:**\n{tool.description}")
+				st.markdown(f"**{tool.name}:**\n{tool.description}")
 	
 		with col1:
 			if st.session_state.file is None:
