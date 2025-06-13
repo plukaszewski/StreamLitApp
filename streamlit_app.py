@@ -4,6 +4,9 @@ import asyncio
 from typing import Optional, Any, List, Union
 from pydantic import BaseModel, Field, SecretStr
 
+def clear():
+	st.session_state.file = None
+	st.rerun()
 
 ##########MCP##########
 from fastmcp import Client, FastMCP
