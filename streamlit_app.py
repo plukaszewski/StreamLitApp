@@ -60,13 +60,9 @@ class MCPClient:
             command="python", args=[server_script_path], env=None
         )
 
-        stdio_transport = self.exit_stack.enter_async_context(
-            stdio_client(server_params)
-        )
+        stdio_transport = stdio_client(server_params)
         self.stdio, self.write = stdio_transport
-        self.session = self.exit_stack.enter_async_context(
-            ClientSession(self.stdio, self.write)
-        )
+        self.session = ClientSession(self.stdio, self.write)
 
         self.session.initialize()
 
