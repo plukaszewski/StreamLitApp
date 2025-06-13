@@ -134,7 +134,7 @@ class ChatOpenRouter(ChatOpenAI):
 
 
 async def init_model():
-	async with Client(mcp) as client:
+	async with Client(init_MCP_SERVER()) as client:
 
 		mcp_tools = client.list_tools()
 
