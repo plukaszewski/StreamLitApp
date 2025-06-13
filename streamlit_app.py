@@ -184,7 +184,7 @@ async def main():
                 return self.template.format(**kwargs)
 
         prompt = CustomPromptTemplate(
-            messages=None
+            messages=None,
             template=template,
             tools=tools,
             # This omits the `agent_scratchpad`, `tools`, and `tool_names` variables because those are generated dynamically
