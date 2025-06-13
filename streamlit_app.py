@@ -48,7 +48,6 @@ async def main():
     template = """
     Answer questions with given template.
     Question: {question}
-    Context: {context}
     Answer:
     """
 
@@ -56,11 +55,10 @@ async def main():
 
     model = ChatOpenRouter(model_name = selected_model)
 
-    def answer_question(question, documents, model):
-        context = "\n\n".join([doc["text"] for doc in documents])
+    def answer_question(question, model):
         prompt = ChatOpenAI.ChatPromptTemplate.from_template(template)
         chain = prompt | model
-        return chain.invoke({"question": question, "context": context})
+        return chain.invoke({"question": question})
 
     if "query" not in st.session_state:
         st.session_state.query = ""
@@ -72,7 +70,6 @@ async def main():
         st.session_state.files = []
 
     async with Client(mcp) as client:
-
         with st.sidebar:
             uploaded_file = st.file_uploader("Choose a file")
             if uploaded_file is not None:
