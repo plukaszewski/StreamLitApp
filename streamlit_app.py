@@ -7,8 +7,8 @@ from langchain_core.prompts import ChatPromptTemplate
 from pydantic import Field, SecretStr
 from fastmcp import Client, FastMCP
 import asyncio
-from langchain_mcp_adapters.tools import load_mcp_tools
-from langchain.agents import AgentExecutor, create_react_agent
+from langgraph.prebuilt import create_react_agent
+from langchain.agents import AgentExecutor
 
 async def main():
     ###########MCP###########
@@ -77,7 +77,7 @@ async def main():
         tools = await client.list_tools()
 
         # Create and run the agent
-        agent = create_react_agent(model, tools, template)
+        agent = create_react_agent(model, tools)
         agent_response = await agent.ainvoke({"messages": "Test the availability of Image Handler"})
 
         with st.sidebar:

@@ -7,3 +7,4 @@ langchain_huggingface
 fastmcp
 asyncio
 langchain-mcp-adapters
+langgraph
