@@ -1,5 +1,4 @@
 import asyncio
-import streamlit_app
 
 mcp = FastMCP("Image Handler")
 

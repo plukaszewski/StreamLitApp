@@ -103,91 +103,75 @@ async def main():
     
     
 
-    #async with Client(mcp) as client:
+    async with Client(mcp) as client:
 
-    with st.sidebar:
-        uploaded_file = st.file_uploader("Choose a file")
-        if uploaded_file is not None:
-            st.session_state.files.append(uploaded_file)
+        with st.sidebar:
+            uploaded_file = st.file_uploader("Choose a file")
+            if uploaded_file is not None:
+                st.session_state.files.append(uploaded_file)
 
-        for file in st.session_state.files:
-            # To read file as bytes:
-            bytes_data = file.getvalue()
-            stringio = StringIO(file.getvalue().decode("utf-8"))
-            string_data = stringio.read()
+            for file in st.session_state.files:
+                # To read file as bytes:
+                bytes_data = file.getvalue()
+                stringio = StringIO(file.getvalue().decode("utf-8"))
+                string_data = stringio.read()
 
-            st.write(string_data)
+                st.write(string_data)
 
-        if st.button("Clear"):
-            st.session_state.files = []
-            uploaded_file = None
+            if st.button("Clear"):
+                st.session_state.files = []
+                uploaded_file = None
 
-        # for tool in await client.list_tools():
-        #    st.text(tool.name)
+            for tool in await client.list_tools():
+                st.text(tool.name)
 
-        
+            st.text(await client.call_tool("test", {"text": "test message"}))
 
-        #st.text(await client.call_tool("test", {"text": "test message"}))
+        st.caption("MCP")
 
-    st.caption("MCP")
+        # Initialize chat history
+        if "messages" not in st.session_state:
+            st.session_state.messages = [{"role": "assistant", "content": "Let's start chatting! 👇"}]
 
-    # Initialize chat history
-    if "messages" not in st.session_state:
-        st.session_state.messages = [{"role": "assistant", "content": "Let's start chatting! 👇"}]
+        # Display chat messages from history on app rerun
+        for message in st.session_state.messages:
+            with st.chat_message(message["role"]):
+                st.markdown(message["content"])
 
-    # Display chat messages from history on app rerun
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+        # Accept user input
+        if prompt := st.chat_input("What is up?"):
+            # Add user message to chat history
+            st.session_state.messages.append({"role": "user", "content": prompt})
+            # Display user message in chat message container
+            with st.chat_message("user"):
+                st.markdown(prompt)
 
-    # Accept user input
-    if prompt := st.chat_input("What is up?"):
-        # Add user message to chat history
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        # Display user message in chat message container
-        with st.chat_message("user"):
-            st.markdown(prompt)
+            # Create and run the agent
+            tools = [convert(client, t) for t in await client.list_tools()]
+            agent = create_react_agent(model, tools)
+            agent_response = await agent.ainvoke({"messages": "Test the availability of Image Handler with text '12345'"})
+            st.text(agent_response)
 
-        # Create and run the agent
-        #tools = [convert(client, t) for t in await client.list_tools()]
-        #agent = create_react_agent(model, tools)
-        #agent_response = await agent.ainvoke({"messages": "Test the availability of Image Handler with text '12345'"})
-        #st.text(agent_response)
-        config = {
-            "mcpServers": {
-                "playwright": {
-                    "command": "uvx",
-                    "args": ["mcp_server"]
-                }
-            }
-        }
+            # Display assistant response in chat message container
+            with st.chat_message("assistant"):
+                message_placeholder = st.empty()
+                full_response = ""
+                
 
+                
 
-        client = MCPClient.from_dict(config)
-        agent = MCPAgent(llm=model, client=client, max_steps=30)
-        result = await agent.run("Test the availability of Image Handler with text '12345'", max_steps=30)
-        st.text(result)
+                assistant_response = answer_question(prompt, model)
 
-        # Display assistant response in chat message container
-        with st.chat_message("assistant"):
-            message_placeholder = st.empty()
-            full_response = ""
-            
-
-            
-
-            assistant_response = answer_question(prompt, model)
-
-            #assistant_response = model.chat.completions.create(model = st.secrets["MODEL"], messages = st.session_state.messages)
-            # Simulate stream of response with milliseconds delay
-            for chunk in assistant_response.content.split():
-                full_response += chunk + " "
-                time.sleep(0.05)
-                # Add a blinking cursor to simulate typing
-                message_placeholder.markdown(full_response + "▌")
-            message_placeholder.markdown(full_response)
-        # Add assistant response to chat history
-        st.session_state.messages.append({"role": "assistant", "content": full_response})
+                #assistant_response = model.chat.completions.create(model = st.secrets["MODEL"], messages = st.session_state.messages)
+                # Simulate stream of response with milliseconds delay
+                for chunk in assistant_response.content.split():
+                    full_response += chunk + " "
+                    time.sleep(0.05)
+                    # Add a blinking cursor to simulate typing
+                    message_placeholder.markdown(full_response + "▌")
+                message_placeholder.markdown(full_response)
+            # Add assistant response to chat history
+            st.session_state.messages.append({"role": "assistant", "content": full_response})
 
 if __name__ == "__main__":
     asyncio.run(main())
