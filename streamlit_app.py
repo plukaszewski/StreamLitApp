@@ -43,6 +43,7 @@ async def main():
     with col2:
         if st.session_state.file is not None:
             st.image(st.session_state.file)
+            st.image(uploaded_file)
         
 
 if __name__ == "__main__":
