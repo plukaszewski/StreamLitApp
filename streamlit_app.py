@@ -125,7 +125,7 @@ async def main():
         search = DuckDuckGoSearchRun()
 
         def duck_wrapper(input_text):
-            st.session_state.tested1 += 1
+            st.session_state.tested += 1
             search_results = search.run(f"site:webmd.com {input_text}")
             return search_results
 
