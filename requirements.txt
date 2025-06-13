@@ -3,4 +3,4 @@ langchain_openai
 pydantic
 faiss-cpu
 langchain_huggingface
-mcp
+fastmcp

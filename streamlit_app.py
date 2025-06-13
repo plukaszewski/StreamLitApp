@@ -7,8 +7,7 @@ from langchain_openai import ChatOpenAI
 from pydantic import Field, SecretStr
 import faiss
 import numpy as np
-from mcp import Client
-from mcp.server.fastmcp import FastMCP
+from fastmcp import Client, FastMCP
 
 
 ###########MCP###########
