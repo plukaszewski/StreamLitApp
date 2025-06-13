@@ -1,6 +1,5 @@
 import asyncio
-pip install fastmcp
-from fastmcp import FastMCP
+import streamlit_app
 
 mcp = FastMCP("Image Handler")
 
