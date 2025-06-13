@@ -313,7 +313,7 @@ async def main():
 				response = agent.invoke(
 					{
 						"messages": [
-							SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the externally and your job is only to invoke correct functions to modify the picture. With every answer try to use one of your tools!"),
+							SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the externally and your job is only to invoke correct functions to modify the picture. With every answer try to use one of your tools! Call tools asynchronously!"),
 							HumanMessage(content="Flip the image vertically"),
 
 						]
@@ -333,7 +333,7 @@ async def main():
 				response = agent.invoke(
 					{
 						"messages": [
-							SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the externally and your job is only to invoke correct functions to modify the picture. With every answer try to use one of your tools!"),
+							SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the externally and your job is only to invoke correct functions to modify the picture. With every answer try to use one of your tools! Call tools asynchronously!"),
 							HumanMessage(content=prompt),
 						]
 					})
