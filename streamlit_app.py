@@ -120,7 +120,7 @@ async def main():
             return search_results
 
         def test(input_text):
-            res = client.call_tool("test", {"text" : input_text})
+            res = client.call_tool("test")
             return res
 
         tools = [
