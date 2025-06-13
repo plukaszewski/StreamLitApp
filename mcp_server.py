@@ -1,5 +1,6 @@
 import asyncio
-from fastmcp import Client, FastMCP
+import streamlit as st
+from fastmcp import FastMCP
 
 mcp = FastMCP("Image Handler")
 
