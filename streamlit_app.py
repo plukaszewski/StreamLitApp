@@ -46,6 +46,12 @@ async def main():
         """Test the correctness of the setup"""
         return f"TEST2 SUCCESSFUL: {text}"
 
+    @mcp.tool()
+    def multiply(a: int, b: int) -> int:
+        """Multiply two numbers."""
+        st.session_state.tested += 1
+        return a * b
+
     #########################
 
 
@@ -123,6 +129,10 @@ async def main():
             res = client.call_tool("test")
             return res
 
+        def mult(a, b):
+            res = client.call_tool("multiply", {"a": a, "b": b})
+            return res
+
         tools = [
             Tool(
                 name = "Search WebMD",
@@ -133,6 +143,12 @@ async def main():
                 name = "Test Image Handler",
                 func=test,
                 description="returns configuration of Image Handler",
+                return_direct=True
+            ),
+            Tool(
+                name = "Multiply",
+                func=mult,
+                description="multiplies two numbers",
                 return_direct=True
             )
         ]
@@ -152,7 +168,7 @@ async def main():
         Thought: I now know the final answer
         Final Answer: the final answer to the original input question
 
-        Begin!
+        Begin! Remember to always try using one of your tools!
 
         Question: {input}
         {agent_scratchpad}"""
@@ -271,7 +287,7 @@ async def main():
                 st.markdown(prompt)
 
             #st.text(agent_executor.run("How can I treat a spained ankle?"))
-            st.text(agent_executor.run("Get the configuration of Image Handler using one of your tools"))
+            st.text(agent_executor.run("multiply numbers 5 and 3"))
 
             # Display assistant response in chat message container
             with st.chat_message("assistant"):
