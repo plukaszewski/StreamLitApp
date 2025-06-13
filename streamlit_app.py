@@ -147,5 +147,4 @@ with col2:
 	if st.session_state.file is not None:
 		st.image(st.session_state.file.name)
 
-	if "test"  in st.session_state:
-		st.text(a)
+	st.text(a)
