@@ -3,3 +3,4 @@ Pillow
 langchain
 langchain-core
 langgraph
+pydantic
