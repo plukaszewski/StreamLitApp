@@ -177,60 +177,55 @@ async def main():
 	if "file" not in st.session_state:
 			st.session_state.file = None
 
-	selected_model = "deepseek/deepseek-chat-v3-0324:free"
-	model = ChatOpenRouter(model_name = selected_model)
+	st.header("Image Tools")
 
+	col1, col2 = st.columns(2)
+
+	with st.sidebar:
+		for tool in st.session_state.tools:
+			st.text(tool.name)
 	
+	with col1:
+		if st.session_state.file is None:
+			uploaded_file = st.file_uploader("Choose a file", type=["jpg"])
+			if uploaded_file is not None:
+				st.session_state.file = uploaded_file
+				fname = uploaded_file.name
+				b = uploaded_file.getvalue()
+				with open("image.jpg", "wb") as f:
+					f.write(b)
+				st.rerun()
 
-		st.header("Image Tools")
+		if(st.button("Flip Vertically")):
+			flip_vertically()
 
-		col1, col2 = st.columns(2)
+		if(st.button("Clear")):
+			clear()
 
-		with st.sidebar:
-			for tool in st.session_state.tools:
-				st.text(tool.name)
-	
-		with col1:
-			if st.session_state.file is None:
-				uploaded_file = st.file_uploader("Choose a file", type=["jpg"])
-				if uploaded_file is not None:
-					st.session_state.file = uploaded_file
-					fname = uploaded_file.name
-					b = uploaded_file.getvalue()
-					with open("image.jpg", "wb") as f:
-						f.write(b)
-					st.rerun()
+		if(st.button("V")):
+			response = st.session_state.agent.invoke(
+				{
+					"messages": [
+						SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the externally and your job is only to invoke correct functions to modify the picture. With every answer try to use one of your tools!"),
+						HumanMessage(content="Flip the image vertically"),
 
-			if(st.button("Flip Vertically")):
-				flip_vertically()
-
-			if(st.button("Clear")):
-				clear()
-
-			if(st.button("V")):
-				response = st.session_state.agent.invoke(
-					{
-						"messages": [
-							SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the externally and your job is only to invoke correct functions to modify the picture. With every answer try to use one of your tools!"),
-							HumanMessage(content="Flip the image vertically"),
-
-						]
-					})
-				st.text(response["messages"][-1].content)
+					]
+				})
+			st.text(response["messages"][-1].content)
 				
-			if(st.button("T")):
-				for tool in st.session_state.mcp_tools
-					st.text(tool)
+		if(st.button("T")):
+			for tool in st.session_state.mcp_tools
+				st.text(tool)
 
-			if prompt := st.chat_input("What shall I do?"):
-				response = st.session_state.agent.invoke(
-					{
-						"messages": [
-							SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the externally and your job is only to invoke correct functions to modify the picture. With every answer try to use one of your tools!"),
-							HumanMessage(content=prompt),
-						]
-					})
-				st.text(response["messages"][-1].content)
+		if prompt := st.chat_input("What shall I do?"):
+			response = st.session_state.agent.invoke(
+				{
+					"messages": [
+						SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image. Image is provided by the externally and your job is only to invoke correct functions to modify the picture. With every answer try to use one of your tools!"),
+						HumanMessage(content=prompt),
+					]
+				})
+			st.text(response["messages"][-1].content)
 
 	with col2:
 		if st.session_state.file is not None:
