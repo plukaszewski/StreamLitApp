@@ -71,7 +71,7 @@ def init_mcp_sever():
 		"""Converts image to monochrome scale. Image is provided on the external server. """
 		img = Image.open("image.jpg")
 		e = PIL.ImageEnhance.Color(img)
-		e.enhance(0.0);
+		img = e.enhance(0.0);
 		img.save("image.jpg")
 		return "SUCCESS"
 
