@@ -148,7 +148,7 @@ async def init_model():
 
 		mcp_tools = await client.list_tools()
 
-		def convert_tool(cc, mcptool):
+		def convert_tool(c, mcptool):
 
 			async def call_tool(
 				**arguments: dict[str, Any],
