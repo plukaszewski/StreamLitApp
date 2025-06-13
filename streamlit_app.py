@@ -1,15 +1,24 @@
 import streamlit as st
 import time
 from io import StringIO
-from typing import Optional
+from typing import Optional, Any
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.tools import StructuredTool
 from pydantic import Field, SecretStr
 from fastmcp import Client, FastMCP
+from mcp.types import (
+    CallToolResult,
+    EmbeddedResource,
+    ImageContent,
+    TextContent,
+)
 import asyncio
 from langgraph.prebuilt import create_react_agent
 from langchain.agents import AgentExecutor
-from langchain_mcp_adapters.tools import convert_mcp_tool_to_langchain_tool
+from langchain_mcp_adapters.tools import _convert_call_tool_result
+
+NonTextContent = ImageContent | EmbeddedResource
 
 async def main():
     ###########MCP###########
@@ -57,7 +66,23 @@ async def main():
 
     model = ChatOpenRouter(model_name = selected_model)
 
-    
+    def convert(client, mcptool):
+
+        async def call_tool(
+            **arguments: dict[str, Any],
+        ) -> tuple[str | list[str], list[NonTextContent] | None]:
+            call_tool_result = await client.call_tool(tool.name, arguments)
+            return _convert_call_tool_result(call_tool_result)
+
+        return StructuredTool(
+        name=tool.name,
+        description=tool.description or "",
+        args_schema=tool.inputSchema,
+        coroutine=call_tool,
+        response_format="content_and_artifact",
+        metadata=tool.annotations.model_dump() if tool.annotations else None,
+    )
+
 
     def answer_question(question, model):
         prompt = ChatPromptTemplate.from_template(template)
@@ -75,7 +100,7 @@ async def main():
 
     async with Client(mcp) as client:
 
-        tools = [convert_mcp_tool_to_langchain_tool(session=None, tool=t) for t in await client.list_tools()]
+        tools = [convert(client, t) for t in await client.list_tools()]
 
         # Create and run the agent
         agent = create_react_agent(model, tools)
