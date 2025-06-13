@@ -18,6 +18,7 @@ NonTextContent = ImageContent | EmbeddedResource
 
 from langchain_mcp_adapters.tools import _convert_call_tool_result
 
+from langchain_core.tools.base import BaseTool
 from langchain.agents import BaseTool, AgentExecutor, LLMSingleActionAgent, AgentOutputParser
 from langchain.prompts import StringPromptTemplate
 
