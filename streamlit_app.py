@@ -53,7 +53,7 @@ async def main():
     Answer:
     """
 
-    selected_model = "minstralai/minstral-7b-instruct:free"
+    selected_model = "meta-llama/llama-3.3-8b-instruct:free"
 
     model = ChatOpenRouter(model_name = selected_model)
 
