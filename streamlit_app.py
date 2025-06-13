@@ -153,8 +153,8 @@ async def main():
             #st.text(agent_response)
 
             st.text("TEST")
-            counter += 1
-            st.text(counter)
+            st.session_state.counter += 1
+            st.text(st.session_state.counter)
 
             # Display assistant response in chat message container
             with st.chat_message("assistant"):
