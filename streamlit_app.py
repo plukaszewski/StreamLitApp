@@ -105,17 +105,15 @@ async def main():
             clear()
 
         if(st.button("TEST")):
-            for step in st.session_state.agent.stream(
+            response = st.session_state.agent.invoke(
                 {
                     "messages": [
-                        SystemMessage(content="You are an image handling service. Test if service is working."),
-                        HumanMessage(content="whats the weather in sf?"),
+                        SystemMessage(content="whats the weather in sf?"),
+                        HumanMessage(content="Flip image vertically"),
 
                     ]
-                },
-                stream_mode="values",
-            ):
-                st.text(step["messages"][-1].content)
+                })
+            st.text(response["messages"][-1].content)
 
 
     with col2:
