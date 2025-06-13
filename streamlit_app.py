@@ -56,11 +56,7 @@ async def main():
 
     model = ChatOpenRouter(model_name = selected_model)
 
-    tools = await client.list_tools()
-
-    # Create and run the agent
-    agent = create_react_agent(model, tools)
-    agent_response = await agent.ainvoke({"messages": "Test the availability of Image Handler"})
+    
 
     def answer_question(question, model):
         prompt = ChatPromptTemplate.from_template(template)
@@ -77,6 +73,13 @@ async def main():
         st.session_state.files = []
 
     async with Client(mcp) as client:
+
+        tools = await client.list_tools()
+
+        # Create and run the agent
+        agent = create_react_agent(model, tools)
+        agent_response = await agent.ainvoke({"messages": "Test the availability of Image Handler"})
+
         with st.sidebar:
             uploaded_file = st.file_uploader("Choose a file")
             if uploaded_file is not None:
