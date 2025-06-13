@@ -100,7 +100,7 @@ async def main():
             response = st.session_state.agent.invoke(
                 {
                     "messages": [
-                        SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image.")
+                        SystemMessage(content="You are an image handling service. Use provided tools to perform operations on the image."),
                         HumanMessage(content="Is service working?"),
 
                     ]
