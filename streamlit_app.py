@@ -149,6 +149,8 @@ async def main():
             #agent_response = await agent.ainvoke({"messages": "Test the availability of Image Handler"})
             #st.text(agent_response)
 
+            st.text("TEST")
+
             # Display assistant response in chat message container
             with st.chat_message("assistant"):
                 message_placeholder = st.empty()
