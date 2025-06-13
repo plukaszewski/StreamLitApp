@@ -1,4 +1,5 @@
 asyncio
 Pillow
 langchain
+langchain-core
 langgraph
