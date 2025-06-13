@@ -8,9 +8,9 @@ from pydantic import Field, SecretStr
 import faiss
 import numpy as np
 from fastmcp import Client, FastMCP
+import asyncio
 
-async def __main__():
-
+async def main():
     ###########MCP###########
 
     mcp = FastMCP("Image Handler")
@@ -122,3 +122,5 @@ async def __main__():
             message_placeholder.markdown(full_response)
         # Add assistant response to chat history
         st.session_state.messages.append({"role": "assistant", "content": full_response})
+
+asyncio.run(main())

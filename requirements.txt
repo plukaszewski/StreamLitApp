@@ -4,3 +4,4 @@ pydantic
 faiss-cpu
 langchain_huggingface
 fastmcp
+asyncio
