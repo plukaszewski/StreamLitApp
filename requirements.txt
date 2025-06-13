@@ -1,6 +1,7 @@
 asyncio
 Pillow
 langchain
+langchain-openai
 langchain-core
 langgraph
 pydantic
