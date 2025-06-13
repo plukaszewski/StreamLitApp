@@ -265,7 +265,7 @@ async def main():
                 st.markdown(prompt)
 
             #st.text(agent_executor.run("How can I treat a spained ankle?"))
-            st.text(agent_executor.run("Test the functionality of Image Handler with text 'hello'"))
+            st.text(agent_executor.run("Test the functionality of Image Handler with text 'hello' and tell me what it returned"))
 
             # Display assistant response in chat message container
             with st.chat_message("assistant"):
