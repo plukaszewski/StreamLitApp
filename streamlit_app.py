@@ -154,6 +154,7 @@ async def main():
 
             st.text("TEST")
             counter += 1
+            st.text(counter)
 
             # Display assistant response in chat message container
             with st.chat_message("assistant"):
