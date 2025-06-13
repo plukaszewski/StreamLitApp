@@ -118,6 +118,9 @@ async def main():
     if "tested" not in st.session_state:
         st.session_state.tested = 0
 
+    if "tested2" not in st.session_state:
+        st.session_state.tested2 = 0
+
     async with Client(mcp) as client:
         search = DuckDuckGoSearchRun()
 
@@ -126,10 +129,12 @@ async def main():
             return search_results
 
         def test():
+            st.session_state.tested2 += 1
             res = client.call_tool("perform")
             return res
 
         def mult(a, b):
+            st.session_state.tested2 += 1
             res = client.call_tool("multiply", {"a": a, "b": b})
             return res
 
