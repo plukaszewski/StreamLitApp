@@ -120,7 +120,7 @@ async def main():
                 assistant_response = answer_question(prompt, model)
                 #assistant_response = model.chat.completions.create(model = st.secrets["MODEL"], messages = st.session_state.messages)
                 # Simulate stream of response with milliseconds delay
-                for chunk in assistant_response.choices[0].message.content.split():
+                for chunk in assistant_response.content.split():
                     full_response += chunk + " "
                     time.sleep(0.05)
                     # Add a blinking cursor to simulate typing
