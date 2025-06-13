@@ -93,7 +93,9 @@ async def main():
             for tool in await client.list_tools():
                 st.text(tool.name)
 
-        st.caption("RAG")
+            st.text(await client.call_tool("test", {"text": "test message"}))
+
+        st.caption("MCP")
 
         # Initialize chat history
         if "messages" not in st.session_state:
