@@ -98,6 +98,9 @@ async def main():
     if "files" not in st.session_state:
         st.session_state.files = []
 
+    if "counter" not in st.session_state:
+        st.session_state.counter = 0
+
     async with Client(mcp) as client:
 
         with st.sidebar:
@@ -150,6 +153,7 @@ async def main():
             #st.text(agent_response)
 
             st.text("TEST")
+            counter += 1
 
             # Display assistant response in chat message container
             with st.chat_message("assistant"):
