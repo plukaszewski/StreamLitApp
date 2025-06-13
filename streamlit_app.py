@@ -47,7 +47,7 @@ async def main():
             super().__init__(base_url=st.secrets["BASE_URL"], openai_api_key=openai_api_key, **kwargs)
 
     template = """
-    You are an assistant for question-answering tasks. Use Polish language by default.
+    You are an assistant for question-answering tasks.
     If you don't know the answer, just say that you don't know. Use three sentences maximum and keep the answer concise.
     Question: {question} 
     Answer:
