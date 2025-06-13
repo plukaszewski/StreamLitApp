@@ -55,7 +55,7 @@ class ChatOpenRouter(ChatOpenAI):
             super().__init__(base_url=st.secrets["BASE_URL"], openai_api_key=openai_api_key, **kwargs)
 
 def init_model():
-    selected_model = "mistralai/devstral-small:free"
+    selected_model = "deepseek/deepseek-chat-v3-0324:free"
     model = ChatOpenRouter(model_name = selected_model)
 
     tools = [
