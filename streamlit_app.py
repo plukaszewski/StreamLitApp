@@ -137,7 +137,7 @@ async def main():
             res = await client.call_tool("multiply", {"a": a, "b": b})
             return res
 
-        tools = [convert_tool(client, t) for t in client.list_tools()]
+        tools = [convert_tool(client, t) for t in await client.list_tools()]
 
         template = """You are personal assistant. You have access to the following tools:
 
