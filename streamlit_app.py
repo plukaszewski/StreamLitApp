@@ -3,6 +3,10 @@ import os
 import asyncio
 
 async def main():
+
+    if "file" not in st.session_state:
+        st.session_state.file = None
+
     st.caption("Image Tools")
 
     
@@ -13,9 +17,10 @@ async def main():
         b = uploaded_file.getvalue()
         with open(uploaded_file.name, "wb") as f:
             f.write(b)
-
+            
     if st.session_state.file is not None:
-        st.image(uploaded_file)
+            st.image(uploaded_file)
+        
 
 if __name__ == "__main__":
     asyncio.run(main())
