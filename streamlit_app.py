@@ -59,6 +59,11 @@ def test() -> str:
 
 ##########MCP##########
 from fastmcp import Client, FastMCP
+from mcp.types import (
+    EmbeddedResource,
+    ImageContent,
+)
+NonTextContent = ImageContent | EmbeddedResource
 
 def init_mcp_sever():
 	mcp = FastMCP("Image Handler")
