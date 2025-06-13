@@ -21,7 +21,7 @@ def flip_vertically():
 
 ##########TEST#########
 
-def test():
+def test(_):
     if "test" not in st.session_state:
         st.session_state.test = 0
 
