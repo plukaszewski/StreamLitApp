@@ -101,7 +101,7 @@ async def main():
     async with Client(mcp) as client:
 
         tools = [convert(client, t) for t in await client.list_tools()]
-        return
+
         # Create and run the agent
         agent = create_react_agent(model, tools)
         agent_response = await agent.ainvoke({"messages": "Test the availability of Image Handler"})
@@ -126,7 +126,7 @@ async def main():
             for tool in await client.list_tools():
                 st.text(tool.name)
 
-            st.text(agent_response.text)
+            st.text(agent_response.messages[-1]["content"])
 
             st.text(await client.call_tool("test", {"text": "test message"}))
 
