@@ -249,7 +249,8 @@ async def main():
 				st.text(tool)
 
 		if(st.button("C")):
-			st.session_state.tools[0].run()
+			d = dict()
+			st.session_state.tools[0].run(d)
 
 		if prompt := st.chat_input("What shall I do?"):
 			response = st.session_state.agent.invoke(
