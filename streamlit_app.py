@@ -316,7 +316,7 @@ async def main():
 				st.session_state.mcp_version = 2
 				st.rerun()
 
-			if st.button("Version 2"):
+			if st.button("Version 3"):
 				st.session_state.mcp_version = 3
 				st.rerun()
 
