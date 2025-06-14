@@ -52,7 +52,9 @@ def init_mcp_sever():
 		img.save("image.png")
 		return "SUCCESS"
 
-	@mcp.tool()
+	mcp2 = FastMCP("Image Handler")
+
+	@mcp2.tool()
 	def roll(delta: int):
 		"""Rolls image by amout of pixels provided. Image is provided on the external server. """
 		img = Image.open("image.png")
@@ -71,7 +73,7 @@ def init_mcp_sever():
 		img.save("image.png")
 		return "SUCCESS"
 
-	@mcp.tool()
+	@mcp2.tool()
 	def monochrome():
 		"""Converts image to monochrome scale. Image is provided on the external server. """
 		img = Image.open("image.png")
@@ -80,12 +82,20 @@ def init_mcp_sever():
 		img.save("image.png")
 		return "SUCCESS"
 
-	@mcp.tool()
+	@mcp2.tool()
 	def remove_background():
 		"""Removes background from the image"""
 		img = Image.open("image.png")
 		img = remove(img)
 		img.save("image.png")
+
+	if "mcp_version" not in st.session_state:
+		return mcp
+
+	if st.session_state.mcp_version == 1:
+		return mcp
+	elif st.session_state.mcp_version == 2:
+		return mcp2
 
 	return mcp
 
@@ -235,6 +245,12 @@ async def main():
 		col1, col2 = st.columns(2)
 
 		with st.sidebar:
+			if st.button("Version 1"):
+				st.session_state.mcp_version = 1
+
+			if st.button("Version 2"):
+				st.session_state.mcp_version = 2
+
 			for tool in st.session_state.tools:
 				st.markdown(f"**{tool.name}:**\n{tool.description}")
 	
