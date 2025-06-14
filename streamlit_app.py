@@ -84,7 +84,7 @@ def init_mcp_sever():
 
 	@mcp2.tool()
 	def remove_background():
-		"""Removes background from the image"""
+		"""Removes background from the image. Image is provided on the external server."""
 		img = Image.open("image.png")
 		img = remove(img)
 		img.save("image.png")
@@ -145,7 +145,7 @@ def init_mcp_sever():
 
 	@mcp3.tool()
 	def remove_background():
-		"""Removes background from the image"""
+		"""Removes background from the image. Image is provided on the external server."""
 		img = Image.open("image.png")
 		img = remove(img)
 		img.save("image.png")
