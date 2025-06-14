@@ -8,3 +8,4 @@ langgraph
 pydantic
 fastmcp
 mcp
+rembg

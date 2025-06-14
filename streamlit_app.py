@@ -3,6 +3,7 @@ import os
 import asyncio
 from typing import Optional, Any, List, Union
 from pydantic import BaseModel, Field, SecretStr
+from pathlib import Path
 
 def clear():
 	st.session_state.file = None
@@ -22,6 +23,7 @@ NonTextContent = ImageContent | EmbeddedResource
 from PIL import Image
 import PIL.ImageFilter
 import PIL.ImageEnhance
+from rembg import remove
 
 def init_mcp_sever():
 	mcp = FastMCP("Image Handler")
@@ -29,36 +31,36 @@ def init_mcp_sever():
 	@mcp.tool()
 	def flip_vertically() -> str:
 		"""Flips image horizontally. Image is provided on the external server. """
-		img = Image.open("image.jpg")
+		img = Image.open("image.png")
 		img = img.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
-		img.save("image.jpg")
+		img.save("image.png")
 		return "SUCCESS"
 
 	@mcp.tool()
 	def flip_horizontally() -> str:
 		"""Flips image vertically. Image is provided on the external server. """
-		img = Image.open("image.jpg")
+		img = Image.open("image.png")
 		img = img.transpose(Image.Transpose.FLIP_TOP_BOTTOM)
-		img.save("image.jpg")
+		img.save("image.png")
 		return "SUCCESS"
 
 	@mcp.tool()
 	def rotate_90() -> str:
 		"""Rotates image by 90 degrees. Image is provided on the external server. """
-		img = Image.open("image.jpg")
+		img = Image.open("image.png")
 		img = img.transpose(Image.Transpose.ROTATE_90)
-		img.save("image.jpg")
+		img.save("image.png")
 		return "SUCCESS"
 
 	@mcp.tool()
 	def roll(delta: int):
 		"""Rolls image by amout of pixels provided. Image is provided on the external server. """
-		img = Image.open("image.jpg")
+		img = Image.open("image.png")
 		xsize, ysize = img.size
 		delta = delta % xsize
 
 		if delta == 0:
-			img.save("image.jpg")
+			img.save("image.png")
 			return "SUCCESS"
 
 		part1 = img.crop((0, 0, delta, ysize))
@@ -66,17 +68,24 @@ def init_mcp_sever():
 		img.paste(part1, (xsize - delta, 0, xsize, ysize))
 		img.paste(part2, (0, 0, xsize - delta, ysize))
 
-		img.save("image.jpg")
+		img.save("image.png")
 		return "SUCCESS"
 
 	@mcp.tool()
 	def monochrome():
 		"""Converts image to monochrome scale. Image is provided on the external server. """
-		img = Image.open("image.jpg")
+		img = Image.open("image.png")
 		e = PIL.ImageEnhance.Color(img)
 		img = e.enhance(0.0);
-		img.save("image.jpg")
+		img.save("image.png")
 		return "SUCCESS"
+
+	@mcp.tool()
+	def remove_background():
+		"""Removes background from the image"""
+		img = Image.open("image.png")
+		img = remove(img)
+		img.save("image.png")
 
 	return mcp
 
@@ -231,13 +240,15 @@ async def main():
 	
 		with col1:
 			if st.session_state.file is None:
-				uploaded_file = st.file_uploader("Choose a file", type=["jpg"])
+				uploaded_file = st.file_uploader("Choose a file", type=["jpg", "jpeg", "png"])
 				if uploaded_file is not None:
 					st.session_state.file = uploaded_file
-					fname = uploaded_file.name
 					b = uploaded_file.getvalue()
-					with open("image.jpg", "wb") as f:
+					n = f"image.{Path(uploaded_file.name).suffix}"
+					with open(n, "wb") as f:
 						f.write(b)
+					img = Image.open(n)
+					img.save("image.png")
 					st.rerun()
 
 			if(st.button("Clear")):
@@ -255,7 +266,7 @@ async def main():
 
 		with col2:
 			if st.session_state.file is not None:
-				st.image("image.jpg")
+				st.image("image.png")
 
 if __name__ == "__main__":
 	asyncio.run(main())
