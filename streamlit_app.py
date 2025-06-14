@@ -247,9 +247,11 @@ async def main():
 		with st.sidebar:
 			if st.button("Version 1"):
 				st.session_state.mcp_version = 1
+				st.rerun()
 
 			if st.button("Version 2"):
 				st.session_state.mcp_version = 2
+				st.rerun()
 
 			for tool in st.session_state.tools:
 				st.markdown(f"**{tool.name}:**\n{tool.description}")
