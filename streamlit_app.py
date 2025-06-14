@@ -89,6 +89,67 @@ def init_mcp_sever():
 		img = remove(img)
 		img.save("image.png")
 
+	mcp3 = FastMCP("Image Handler")
+
+	@mcp3.tool()
+	def flip_vertically() -> str:
+		"""Flips image horizontally. Image is provided on the external server. """
+		img = Image.open("image.png")
+		img = img.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+		img.save("image.png")
+		return "SUCCESS"
+
+	@mcp3.tool()
+	def flip_horizontally() -> str:
+		"""Flips image vertically. Image is provided on the external server. """
+		img = Image.open("image.png")
+		img = img.transpose(Image.Transpose.FLIP_TOP_BOTTOM)
+		img.save("image.png")
+		return "SUCCESS"
+
+	@mcp3.tool()
+	def rotate_90() -> str:
+		"""Rotates image by 90 degrees. Image is provided on the external server. """
+		img = Image.open("image.png")
+		img = img.transpose(Image.Transpose.ROTATE_90)
+		img.save("image.png")
+		return "SUCCESS"
+
+	@mcp3.tool()
+	def roll(delta: int):
+		"""Rolls image by amout of pixels provided. Image is provided on the external server. """
+		img = Image.open("image.png")
+		xsize, ysize = img.size
+		delta = delta % xsize
+
+		if delta == 0:
+			img.save("image.png")
+			return "SUCCESS"
+
+		part1 = img.crop((0, 0, delta, ysize))
+		part2 = img.crop((delta, 0, xsize, ysize))
+		img.paste(part1, (xsize - delta, 0, xsize, ysize))
+		img.paste(part2, (0, 0, xsize - delta, ysize))
+
+		img.save("image.png")
+		return "SUCCESS"
+
+	@mcp3.tool()
+	def monochrome():
+		"""Converts image to monochrome scale. Image is provided on the external server. """
+		img = Image.open("image.png")
+		e = PIL.ImageEnhance.Color(img)
+		img = e.enhance(0.0);
+		img.save("image.png")
+		return "SUCCESS"
+
+	@mcp3.tool()
+	def remove_background():
+		"""Removes background from the image"""
+		img = Image.open("image.png")
+		img = remove(img)
+		img.save("image.png")
+
 	if "mcp_version" not in st.session_state:
 		return mcp
 
@@ -96,6 +157,8 @@ def init_mcp_sever():
 		return mcp
 	elif st.session_state.mcp_version == 2:
 		return mcp2
+	elif st.session_state.mcp_version == 3:
+		return mcp3
 
 	return mcp
 
@@ -251,6 +314,10 @@ async def main():
 
 			if st.button("Version 2"):
 				st.session_state.mcp_version = 2
+				st.rerun()
+
+			if st.button("Version 2"):
+				st.session_state.mcp_version = 3
 				st.rerun()
 
 			for tool in st.session_state.tools:
